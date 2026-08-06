@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Site</title>
+
+        <!-- CUSTOM CSS -->
+        <link rel="stylesheet" href="css/styles.css">
+
+        <!-- FONTS -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&family=Oi&family=Rubik+Spray+Paint&family=Viga&display=swap" rel="stylesheet">      
+    </head>
+    <body>
+
+        <!-- ===================== PRELOADER ===================== -->
+        <div class="preloader" id="preloader" role="status" aria-live="polite">
+            <div class="preloader-inner">
+            <div class="load-bar-track">
+                <div class="load-bar-fill" id="loadBarFill"></div>
+            </div>
+            <span class="load-percent" id="loadPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- ===================== NAV ===================== -->
+        <nav class="site-nav" id="siteNav">
+            <div class="site-nav-inner">
+                <a href="#hero" class="nav-logo" id="navLogo">Ivan Cecil Walks</a>
+
+                <div class="nav-actions">
+                    <a class="nav-cta" href="#contact" data-target="contact">
+                        <span class="nav-cta-row">
+                            <span class="nav-cta-text">Get in touch</span>
+                            <span class="nav-cta-arrow">&rarr;</span>
+                        </span>
+                        <span class="nav-cta-row" aria-hidden="true">
+                            <span class="nav-cta-text">Get in touch</span>
+                            <span class="nav-cta-arrow">&rarr;</span>
+                        </span>
+                    </a>
+
+                    <div class="menu-wrapper" id="menuWrapper">
+                        <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="siteMenu">
+                            <span class="line"></span>
+                            <span class="line"></span>
+                        </button>
+
+                        <ul class="site-menu" id="siteMenu">
+                            <li><a href="#hero" data-target="hero">Home</a></li>
+                            <li><a href="#work" data-target="work">Work</a></li>
+                            <li><a href="#about" data-target="about">About</a></li>
+                            <li><a href="#contact" data-target="contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ===================== HERO ===================== -->
+        <section class="hero" id="hero">
+            <div class="hero-carousel" id="heroCarousel">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Replace with the real image files/paths -->
+                    <div class="carousel-slide"><img src="iproj-ASSETS/ivanset-hero.mp4" alt=""></div>
+                    <div class="carousel-slide"><img src="iproj-ASSETS/ivanconcert.mov" alt=""></div>
+                    <div class="carousel-slide"><img src="iproj-ASSETS/iproj-slide-3.jpg" alt=""></div>
+                    <div class="carousel-slide"><img src="iproj-ASSETS/iproj-slide-4.jpg" alt=""></div>
+                    <div class="carousel-slide"><img src="iproj-ASSETS/iproj-slide-5.jpg" alt=""></div>
+                </div>
+
+                <button class="carousel-arrow carousel-arrow--prev" id="carouselPrev" type="button" aria-label="Previous slide">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="carousel-arrow carousel-arrow--next" id="carouselNext" type="button" aria-label="Next slide">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+
+                <div class="carousel-dots" id="carouselDots">
+                    <button class="carousel-dot is-active" type="button" data-slide="0" aria-label="Go to slide 1"></button>
+                    <button class="carousel-dot" type="button" data-slide="1" aria-label="Go to slide 2"></button>
+                    <button class="carousel-dot" type="button" data-slide="2" aria-label="Go to slide 3"></button>
+                    <button class="carousel-dot" type="button" data-slide="3" aria-label="Go to slide 4"></button>
+                    <button class="carousel-dot" type="button" data-slide="4" aria-label="Go to slide 5"></button>
+                </div>
+            </div>
+            <div class="hero-scrim" id="heroScrim"></div>
+        </section>
+
+        <!-- ===================== GALLERY ===================== -->
+        <section class="gallery" id="work">
+            <div class="gallery-glow" aria-hidden="true"></div>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Populated by js/index.js — 25 vertical video tiles in a fixed 5x5 grid -->
+            </div>
+        </section>
+
+        <!-- ===================== GALLERY LIGHTBOX ===================== -->
+        <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true">
+            <div class="gallery-lightbox-backdrop" id="galleryLightboxBackdrop"></div>
+            <div class="gallery-lightbox-stage">
+                <div class="gallery-lightbox-flip" id="galleryLightboxFlip">
+                    <div class="gallery-lightbox-video-wrap">
+                        <span class="gallery-lightbox-tag" id="galleryLightboxTag">Project 01</span>
+                        <button class="gallery-lightbox-close" id="galleryLightboxClose" type="button" aria-label="Close preview">&times;</button>
+                        <video class="gallery-lightbox-video" id="galleryLightboxVideo" loop muted playsinline></video>
+                    </div>
+                </div>
+                <!-- Point this at the real per-project gallery route once it exists -->
+                <a class="gallery-lightbox-cta" id="galleryLightboxCta" href="#">
+                    <span class="gallery-lightbox-cta-text">View full project</span>
+                    <span class="gallery-lightbox-cta-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </div>
+
+        <script src="js/index.js"></script>
+    </body>
+</html>

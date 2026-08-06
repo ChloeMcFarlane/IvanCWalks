@@ -1,0 +1,943 @@
+/* ==========================================================================
+   FONTS
+   ========================================================================== */
+
+   .bbh-bartle-regular {
+    font-family: "BBH Bartle", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .viga-regular {
+    font-family: "Viga", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .chonburi-regular {
+    font-family: ;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .climate-crisis{
+    font-family: ;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "YEAR" 1979;
+  }
+  
+  /* ==========================================================================
+     DESIGN SYSTEM & CORE VARIABLES
+     ========================================================================== */
+  :root {
+    /* Brand palette (raw values) */
+    --onyx:           #121212ff;
+    --graphite:       #2c2c2cff;
+    --dim-grey:       #696969ff;
+    --grey-olive:     #949494ff;
+    --silver:         #c2c2c2ff;
+    --alabaster-grey: #e8e8e8ff;
+
+    /* Experimental accent palette — trying this behind the gallery */
+    --amber-glow:      #F99A1Aff;
+    --sunflower-gold:  #FFBE51ff;
+    --pink-orchid:     #D7A6C3ff;
+    --magenta:         #FF03F9ff;
+    --cornflower-blue: #6591D3ff;
+  
+    /* Mapped design tokens */
+    --primary-accent: var(--dim-grey);
+    --bg-main:        var(--onyx);
+    --bg-section:     var(--alabaster-grey); 
+    --card-bg:        var(--alabaster-grey);
+    --text-heading:   var(--onyx);
+    --text-body:      var(--onyx);
+    --gold-accent:    var(--grey-olive);
+    --white:          #FFFFFF;
+    --border-light:   rgba(18, 18, 18, 0.12);
+    --glass-overlay:  rgba(232, 232, 232, 0.72);
+
+    /* Fonts */
+    --font-accent:    "Oi", sans-serif;
+    --font-bold:      "BBH Bartle", sans-serif;
+    --font-decaying:  "Rubik Spray Paint", sans-serif;
+    --font-sans:      "Viga", sans-serif;
+  }
+  
+  /* Reset & Global Base (STRICT NO-SHADOW RULE) */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important; 
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    font-size: 14px;
+  }
+  
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-body);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* ==========================================================================
+     SCROLL REVEAL — sections fade in as they scroll into view
+     ========================================================================== */
+  @keyframes sectionAppear {
+    from {
+      opacity: 0;
+      clip-path: inset(12% 0 0 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  
+  .container {
+    animation: sectionAppear linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+
+  /* ==========================================================================
+   PRELOADER — horizontal load bar
+   ========================================================================== */
+
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--onyx);
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  
+  .preloader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  
+  .preloader-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: min(88vw, 34rem);
+  }
+  
+  .load-bar-track {
+    position: relative;
+    flex: 1 1 auto;
+    height: 3px;
+    background-color: rgba(232, 232, 232, 0.18); /* alabaster-grey, dim */
+    overflow: hidden;
+  }
+  
+  .load-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: var(--alabaster-grey);
+    transform-origin: left center;
+    will-change: width;
+  }
+  
+  .load-percent {
+    flex: 0 0 auto;
+    min-width: 4.6rem;
+    text-align: right;
+    color: var(--alabaster-grey);
+    font-size: 1.8rem;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* ==========================================================================
+     HERO — fullscreen video, fade in from black
+     ========================================================================== */
+  
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    overflow: hidden;
+    background-color: var(--onyx);
+  }
+  
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background-color: var(--onyx);
+    opacity: 1;
+    transition: opacity 1.6s ease;
+    pointer-events: none;
+  }
+  
+  .hero-scrim.is-faded {
+    opacity: 0;
+  }
+
+  /* ==========================================================================
+     HERO CAROUSEL — seamless image scroller
+     ========================================================================== */
+
+  .hero-carousel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: transparent;
+    touch-action: pan-y;
+  }
+
+  .carousel-track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    transition: transform 800ms cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+  }
+
+  .carousel-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .carousel-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: transparent;
+    border: 2px solid var(--alabaster-grey);
+    border-radius: 100%;
+    color: var(--alabaster-grey);
+    opacity: 0.6;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease;
+  }
+
+  .carousel-arrow:hover,
+  .carousel-arrow:focus-visible {
+    opacity: 1;
+  }
+
+  .carousel-arrow svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .carousel-arrow--prev {
+    left: clamp(0.75rem, 3vw, 2.5rem);
+  }
+
+  .carousel-arrow--next {
+    right: clamp(0.75rem, 3vw, 2.5rem);
+  }
+
+  .carousel-dots {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(1rem, 4vw, 2.5rem);
+    z-index: 3;
+    display: flex;
+    gap: 0.6rem;
+    transform: translateX(-50%);
+  }
+
+  .carousel-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(232, 232, 232, 0.35);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .carousel-dot.is-active {
+    background-color: var(--alabaster-grey);
+    transform: scale(1.3);
+  }
+
+  /* ==========================================================================
+     SITE NAV — fixed, blurred, hamburger + slide-in menu
+     (adapted from reference nav pattern: logo left, actions right,
+     glass blur band, hamburger morphs to X, menu list slides in)
+     ========================================================================== */
+
+  .site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 500;
+    padding: clamp(1rem, 3vw, 1.75rem) clamp(1rem, 4vw, 2.5rem);
+    transition: padding 0.5s ease;
+  }
+
+  /* Blur band is sized independently of the nav's own (small) content
+     height so the frosted area reads as a longer, more substantial band
+     rather than a sliver hugging the logo/actions row. */
+  .site-nav::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: clamp(10rem, 22vw, 16rem);
+    z-index: -1;
+    opacity: 0;
+    backdrop-filter: blur(36px);
+    -webkit-backdrop-filter: blur(36px);
+    transition: opacity 0.5s ease;
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 35%,
+      rgba(0, 0, 0, 0.55) 65%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 35%,
+      rgba(0, 0, 0, 0.55) 65%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  .site-nav.is-scrolled {
+    padding-top: clamp(0.6rem, 1.6vw, 1rem);
+    padding-bottom: clamp(0.6rem, 1.6vw, 1rem);
+  }
+
+  .site-nav.is-scrolled::after {
+    opacity: 1;
+  }
+
+  .site-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .nav-logo {
+    font-family: var(--font-bold);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: clamp(2.25rem, 8vw, 3.5rem);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: font-size 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .site-nav.is-scrolled .nav-logo {
+    font-size: clamp(0.85rem, 1.6vw, 1.15rem);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+  }
+
+  /* GET IN TOUCH — two stacked rows, hover slides row 2 into view */
+  .nav-cta {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 1.1rem;
+    cursor: pointer;
+  }
+
+  .nav-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .nav-cta:hover .nav-cta-row {
+    transform: translateY(-1.1rem);
+  }
+
+  .nav-cta-text {
+    font-family: var(--font-sans);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .nav-cta-arrow {
+    font-family: var(--font-sans);
+    color: var(--alabaster-grey);
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  /* Hamburger */
+  .menu-wrapper {
+    position: relative;
+  }
+
+  .menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 20px;
+    height: 14px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .menu-btn .line {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: var(--alabaster-grey);
+    transform-origin: center;
+    transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
+    position: relative;
+  }
+
+  .menu-btn.active .line:nth-child(1) {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+
+  .menu-btn.active .line:nth-child(2) {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+
+  /* Slide-in menu list */
+  .site-menu {
+    list-style: none;
+    position: absolute;
+    top: calc(100% + 1.25rem);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    pointer-events: none;
+  }
+
+  .site-menu li {
+    overflow: hidden;
+  }
+
+  .site-menu li a {
+    display: block;
+    font-family: var(--font-bold);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(1.35rem, 3.4vw, 2rem);
+    line-height: 1.05;
+    text-align: right;
+    transform: translateX(140%);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.4s ease, color 0.25s ease;
+  }
+
+  .site-menu li a:hover {
+    color: var(--grey-olive);
+  }
+
+  .menu-wrapper.is-open .site-menu {
+    pointer-events: auto;
+  }
+
+  .menu-wrapper.is-open .site-menu li a {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .menu-wrapper.is-open .site-menu li:nth-child(1) a { transition-delay: 0.02s; }
+  .menu-wrapper.is-open .site-menu li:nth-child(2) a { transition-delay: 0.08s; }
+  .menu-wrapper.is-open .site-menu li:nth-child(3) a { transition-delay: 0.14s; }
+  .menu-wrapper.is-open .site-menu li:nth-child(4) a { transition-delay: 0.2s; }
+
+  /* ==========================================================================
+     GALLERY — fixed 5x5 grid of autoplaying vertical videos
+     Column count never changes; tiles simply shrink with the viewport,
+     so the 5x5 structure holds on mobile too.
+     ========================================================================== */
+
+  .gallery {
+    position: relative;
+    background-color: var(--bg-main);
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2.5rem);
+    overflow: hidden;
+  }
+
+  /* Ombre wash — runs the full length of the gallery section, rising out
+     of the black at the top edge, carrying the amber/gold/orchid/magenta/
+     cornflower palette through the middle, and receding back into black
+     at the bottom. The transparent stops (not a mask) are what let the
+     onyx background show through at each end, so the transition reads as
+     one continuous fade rather than a shape floating on black. */
+  .gallery-glow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        155deg,
+        transparent 0%,
+        var(--cornflower-blue) 16%,
+        var(--magenta) 34%,
+        var(--pink-orchid) 50%,
+        var(--sunflower-gold) 66%,
+        var(--amber-glow) 82%,
+        transparent 100%
+      );
+    background-size: 100% 100%;
+    filter: blur(150px) saturate(115%);
+    opacity: 0.6;
+    mix-blend-mode: screen;
+  }
+
+  /* A second, slower diagonal pass in the opposite direction thickens the
+     middle of the wash so it reads as an ombre band rather than a single
+     thin diagonal streak, while keeping both ends clean black. */
+  .gallery-glow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      205deg,
+      transparent 0%,
+      var(--amber-glow) 20%,
+      var(--pink-orchid) 45%,
+      var(--cornflower-blue) 70%,
+      transparent 92%
+    );
+    filter: blur(170px);
+    opacity: 0.4;
+    mix-blend-mode: screen;
+  }
+
+  .gallery-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: clamp(0.2rem, 0.9vw, 0.6rem);
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    background-color: var(--graphite);
+    cursor: pointer;
+  }
+
+  .gallery-item:focus-visible {
+    outline: 1px solid var(--alabaster-grey);
+    outline-offset: -1px;
+  }
+
+  .gallery-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.6s ease;
+  }
+
+  .gallery-item:hover .gallery-video {
+    transform: scale(1.04);
+  }
+
+  /* ==========================================================================
+     GALLERY LIGHTBOX — clicking a tile flips it 360° and grows it to ~60%
+     of the viewport, overlaying the rest of the page, with a CTA below to
+     the full project gallery.
+     ========================================================================== */
+
+  .gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .gallery-lightbox.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .gallery-lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(18, 18, 18, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .gallery-lightbox.is-open .gallery-lightbox-backdrop {
+    opacity: 1;
+  }
+
+  .gallery-lightbox-stage {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    perspective: 1800px;
+    padding: 1.5rem;
+  }
+
+  .gallery-lightbox-flip {
+    height: 60vh;
+    max-height: 60svh;
+    aspect-ratio: 9 / 16;
+    max-width: 88vw;
+    transform-style: preserve-3d;
+    transform: scale(0.28) rotateY(0deg);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .gallery-lightbox.is-open .gallery-lightbox-flip {
+    animation: galleryFlipGrow 0.9s cubic-bezier(0.65, 0, 0.18, 1.02) forwards;
+  }
+
+  @keyframes galleryFlipGrow {
+    0% {
+      transform: scale(0.28) rotateY(0deg);
+      opacity: 0;
+    }
+    45% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotateY(360deg);
+      opacity: 1;
+    }
+  }
+
+  .gallery-lightbox-video-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--graphite);
+    border: 1px solid rgba(232, 232, 232, 0.14);
+  }
+
+  .gallery-lightbox-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .gallery-lightbox-tag {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    z-index: 2;
+    font-family: var(--font-decaying);
+    color: var(--sunflower-gold);
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .gallery-lightbox-close {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 2;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(18, 18, 18, 0.55);
+    color: var(--alabaster-grey);
+    font-family: var(--font-sans);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .gallery-lightbox-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2.1rem;
+    background-color: var(--alabaster-grey);
+    color: var(--onyx);
+    font-family: var(--font-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .gallery-lightbox.is-open .gallery-lightbox-cta {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.7s;
+  }
+
+  .gallery-lightbox-cta:hover,
+  .gallery-lightbox-cta:focus-visible {
+    background-color: var(--sunflower-gold);
+    color: var(--onyx);
+  }
+
+  .gallery-lightbox-cta-arrow {
+    font-size: 1.05rem;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE DESIGN
+     All breakpoint and motion-preference overrides live here, grouped by
+     breakpoint, so the whole site's responsive behavior is in one place.
+     ========================================================================== */
+
+  /* ---- Mobile nav (up to 768px) ----
+     Reuses the same .menu-wrapper.is-open / .menu-btn.active classes the
+     desktop pattern already toggles — on narrow screens the dropdown list
+     becomes a fullscreen glass overlay instead, so the same JS drives both. */
+  @media (max-width: 768px) {
+    .site-menu {
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100svh;
+      align-items: center;
+      justify-content: center;
+      gap: 1.1rem;
+      background-color: rgba(18, 18, 18, 0.92);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      opacity: 0;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      visibility: hidden;
+    }
+
+    .menu-wrapper.is-open .site-menu {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .site-menu li {
+      overflow: visible;
+    }
+
+    .site-menu li a {
+      text-align: center;
+      font-size: clamp(2rem, 9vw, 2.75rem);
+      transform: translateY(1.25rem);
+      transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.4s ease, color 0.25s ease;
+    }
+
+    .menu-wrapper.is-open .site-menu li a {
+      transform: translateY(0);
+    }
+
+    .nav-cta {
+      height: auto;
+    }
+
+    .nav-cta-row {
+      transform: none !important;
+    }
+
+    .nav-cta-row[aria-hidden="true"] {
+      display: none;
+    }
+  }
+
+  /* ---- Tablet / iPad (portrait & landscape, up to 1024px) ---- */
+  @media (max-width: 1024px) {
+    .nav-logo {
+      font-size: clamp(2rem, 6vw, 3rem);
+    }
+
+    .site-nav.is-scrolled .nav-logo {
+      font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    }
+
+    .site-nav-inner {
+      gap: 1.1rem;
+    }
+
+    .gallery-glow {
+      filter: blur(110px) saturate(115%);
+    }
+
+    .gallery-glow::after {
+      filter: blur(120px);
+    }
+  }
+
+  /* ---- Mobile (up to 640px) ---- */
+  @media (max-width: 640px) {
+    .gallery-grid {
+      gap: 2px;
+    }
+
+    .gallery-glow {
+      opacity: 0.5;
+      filter: blur(70px) saturate(115%);
+    }
+
+    .gallery-glow::after {
+      opacity: 0.32;
+      filter: blur(85px);
+    }
+  }
+
+  /* ---- Small mobile (up to 480px) ---- */
+  @media (max-width: 480px) {
+    .preloader-inner {
+      width: 82vw;
+      gap: 1rem;
+    }
+
+    .load-percent {
+      font-size: 1.6rem;
+      min-width: 2.6rem;
+    }
+
+    .carousel-arrow {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .carousel-arrow svg {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+
+    .nav-logo {
+      font-size: clamp(1.6rem, 10vw, 2.4rem);
+    }
+
+    .nav-actions {
+      gap: 1.1rem;
+    }
+
+    .nav-cta-text {
+      font-size: 0.68rem;
+    }
+
+    .site-menu li a {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* ---- Reduced motion (all breakpoints) ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .preloader {
+      transition: none;
+    }
+
+    .hero-scrim {
+      transition: none;
+    }
+
+    .carousel-track {
+      transition: none;
+    }
+
+    .nav-cta-row,
+    .menu-btn .line,
+    .site-menu li a,
+    .site-nav,
+    .site-nav::after,
+    .nav-logo {
+      transition: none;
+    }
+
+    .gallery-video {
+      transition: none;
+    }
+
+    .gallery-lightbox-flip {
+      animation: none !important;
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+      transition: none;
+    }
+
+    .gallery-lightbox-backdrop,
+    .gallery-lightbox-cta,
+    .site-menu,
+    .site-menu li a {
+      transition: none;
+    }
+  }
