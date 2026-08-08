@@ -341,16 +341,16 @@
     if (!grid) return;
 
     const GALLERY_IMAGES = [
-      'iproj-ASSETS/ivan-gallery1.png',
-      'iproj-ASSETS/ivan-gallery2.png',
-      'iproj-ASSETS/ivan-gallery3.png',
-      'iproj-ASSETS/ivan-gallery4.png',
-      'iproj-ASSETS/ivan-gallery5.png',
-      'iproj-ASSETS/ivan-gallery6.png',
-      'iproj-ASSETS/ivan-gallery7.png',
-      'iproj-ASSETS/ivan-gallery8.png',
-      'iproj-ASSETS/ivan-gallery9.png',
-      'iproj-ASSETS/ivan-gallery10.png',
+      'iproj-ASSETS/ivan-gallery15.JPG',
+      'iproj-ASSETS/ivan-gallery1.mp4',
+      'iproj-ASSETS/ivan-gallery3.JPG',
+      'iproj-ASSETS/ivan-gallery4.PNG',
+      'iproj-ASSETS/ivan-gallery6.JPG',
+      'iproj-ASSETS/ivan-gallery8.PNG',
+      'iproj-ASSETS/ivan-gallery12.jpeg',
+      'iproj-ASSETS/ivan-gallery10.jpeg',
+      'iproj-ASSETS/ivan-gallery11.jpeg',
+      'iproj-ASSETS/ivan-gallery13.jpeg',
     ];
 
     // Fisher–Yates shuffle
@@ -389,9 +389,7 @@
   })();
   
   /* ==========================================================================
-     GALLERY LIGHTBOX — click (or Enter/Space) a tile: it flips 360° and
-     grows to ~60% of the viewport over a dimmed backdrop, with a button
-     below linking to that project's full gallery page.
+     GALLERY LIGHTBOX 
      ========================================================================== */
   
   (function () {
@@ -413,6 +411,43 @@
       return IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext));
     }
 
+    /* Preload + decode each tile's asset ahead of time (on hover/focus,
+       well before the tile is actually clicked) so the flip never has
+       to wait on a network fetch or a synchronous decode mid-animation.
+       That decode-on-open was the real cause of the flip looking
+       delayed or like it was skipping its opening frames — the rotation
+       itself is plain CSS and was never the bottleneck. */
+    const preloaded = new Set();
+
+    function preload(src) {
+      if (!src || preloaded.has(src)) return;
+      preloaded.add(src);
+      if (isImageSrc(src)) {
+        const img = new Image();
+        img.src = src;
+        // decode() runs off the main thread and warms the browser's
+        // decoded-bitmap cache at full size, so setting previewImage.src
+        // later reuses that work instead of decoding fresh mid-flip.
+        if (img.decode) img.decode().catch(() => {});
+      } else {
+        const video = document.createElement('video');
+        video.preload = 'auto';
+        video.muted = true;
+        video.src = src;
+        video.load();
+      }
+    }
+
+    grid.addEventListener('pointerover', (e) => {
+      const tile = e.target.closest('.gallery-item');
+      if (tile) preload(tile.dataset.src);
+    });
+
+    grid.addEventListener('focusin', (e) => {
+      const tile = e.target.closest('.gallery-item');
+      if (tile) preload(tile.dataset.src);
+    });
+
     let lastFocused = null;
 
     function openLightbox(tile) {
@@ -420,9 +455,16 @@
       const project = tile.dataset.project;
       if (!src) return;
 
+      // The tile's own thumbnail is already decoded and on screen — reuse
+      // it as the video poster so there's an instant frame the moment the
+      // flip starts, rather than a blank wrap while the video buffers.
+      const thumb = tile.querySelector('.gallery-media');
+      const posterSrc = thumb ? thumb.currentSrc || thumb.src : '';
+
       if (isImageSrc(src)) {
         previewVideo.pause();
         previewVideo.removeAttribute('src');
+        previewVideo.removeAttribute('poster');
         previewVideo.classList.add('is-hidden');
         previewImage.src = src;
         previewImage.classList.remove('is-hidden');
@@ -430,6 +472,7 @@
         previewImage.classList.add('is-hidden');
         previewImage.removeAttribute('src');
         previewVideo.classList.remove('is-hidden');
+        if (posterSrc) previewVideo.setAttribute('poster', posterSrc);
         previewVideo.src = src;
         previewVideo.currentTime = 0;
         previewVideo.play().catch(() => {});
@@ -441,11 +484,21 @@
 
       lastFocused = document.activeElement;
 
-      // Force a reflow so the flip/grow animation restarts even if a
-      // different tile was just open (class was already present).
+      // Reset to the closed state, then wait two animation frames before
+      // adding "is-open". This used to be a synchronous forced reflow
+      // (reading offsetWidth right before flipping the class in the same
+      // tick), which doesn't actually guarantee the browser paints the
+      // reset state as its own frame — under any load (like the image
+      // work happening above) the browser can coalesce that reset away
+      // and the flip's first frames never get painted, which is what
+      // showed up as a delayed start / skipped opening rotation. Two
+      // nested rAFs guarantee a real committed paint in between.
       lightbox.classList.remove('is-open');
-      void lightbox.offsetWidth;
-      lightbox.classList.add('is-open');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          lightbox.classList.add('is-open');
+        });
+      });
       lightbox.setAttribute('aria-hidden', 'false');
 
       document.body.style.overflow = 'hidden';
@@ -485,9 +538,7 @@
   })();
 
 /* ==========================================================================
-   ABOUT — triggers the zoom/blur/slide-in reveal once, the first time the
-   section scrolls into view. CSS handles all the actual animation; this
-   just flips the class.
+   ABOUT
    ========================================================================== */
 
 (function () {
@@ -520,15 +571,38 @@
 })();
 
 /* ==========================================================================
-   MERCH MARQUEE — the "MERCH" title's horizontal position is a direct
-   function of scroll position, not time. There is no CSS animation and
-   no independent rAF loop driving it: every scroll event just writes a
-   translateX derived from window.scrollY. Several "Merch" labels are
-   repeated back to back in the track, and the offset is wrapped with a
-   modulo, so as one label scrolls out of view on one side, the next one
-   is always already in place to take over on the other — an infinite
-   loop that only advances when the page itself moves.
+   MERCH MARQUEE
    ========================================================================== */
+
+(function () {
+  const images = Array.from(document.querySelectorAll('.merch-product-image'));
+  if (!images.length) return;
+
+  function reveal(img) {
+    img.classList.add('is-loaded');
+    const product = img.closest('.merch-product');
+    if (product) product.classList.add('is-glowing');
+  }
+
+  images.forEach((img) => {
+    // decode() (where available) waits for the bitmap to actually be
+    // ready to paint, which is a stronger guarantee than the 'load'
+    // event and avoids any single frame where the glow filter has
+    // nothing but empty layout box to render around.
+    if (img.complete && img.naturalWidth > 0) {
+      reveal(img);
+      return;
+    }
+    if (img.decode) {
+      img.decode().then(() => reveal(img)).catch(() => {
+        // decode() can reject on some browsers even for a valid image
+        // that still finishes loading — fall back to the load event.
+        if (img.complete) reveal(img);
+      });
+    }
+    img.addEventListener('load', () => reveal(img), { once: true });
+  });
+})();
 
 (function () {
   const track = document.getElementById('merchMarqueeTrack');
@@ -537,7 +611,9 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // How far the marquee shifts per pixel of page scroll.
-  const SCROLL_SPEED = 0.55;
+  // Was 0.55 — bumped up so it visibly moves left quicker per scroll,
+  // same scroll-linked mechanism (not autoplay), just a faster ratio.
+  const SCROLL_SPEED = 1.15;
 
   // The width of a single "Merch" label, including its trailing gap —
   // this is the loop length: once the track has shifted this far, it's
@@ -573,4 +649,71 @@
   // plain scroll listener is enough to stay in sync with it either way.
   window.addEventListener('scroll', () => update(window.scrollY), { passive: true });
   update(window.scrollY);
+})();
+
+/* ==========================================================================
+   FOOTER — pinned behind .page-wrap (see CSS). Two jobs here:
+
+   1. Keep .page-wrap's bottom spacer sized to the footer's real (responsive)
+      height, so there's exactly enough scroll runway to fully uncover it.
+   2. Toggle the staggered content reveal based on actual scroll position —
+      NOT IntersectionObserver, because a position:fixed element's geometric
+      box always overlaps the viewport rectangle regardless of whether
+      .page-wrap is currently covering it, so IO would fire immediately on
+      load rather than only once you've actually scrolled to it. This also
+      makes the reveal naturally bidirectional: scroll down past the
+      threshold, rows fade in; scroll back up above it, they reverse — same
+      one class flip, just driven by where you actually are on the page.
+   ========================================================================== */
+
+(function () {
+  const footer = document.getElementById('contact');
+  const pageWrap = document.getElementById('pageWrap');
+  if (!footer || !footer.classList.contains('site-footer') || !pageWrap) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function sizeSpacer() {
+    // Measure with the spacer briefly cleared so we get the footer's true
+    // content height, not a height inflated by a stale previous spacer.
+    pageWrap.style.paddingBottom = '0px';
+    const h = footer.offsetHeight;
+    pageWrap.style.paddingBottom = h + 'px';
+    return h;
+  }
+
+  let footerHeight = sizeSpacer();
+
+  function updateReveal() {
+    const scrollBottom = window.scrollY + window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+    // Starts revealing once the viewport bottom enters the last ~65% of
+    // the footer's spacer region; fully revealed at the true page bottom.
+    const revealAt = docHeight - footerHeight * 0.65;
+    footer.classList.toggle('is-revealed', scrollBottom >= revealAt);
+  }
+
+  window.addEventListener('scroll', updateReveal, { passive: true });
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      footerHeight = sizeSpacer();
+      updateReveal();
+    }, 150);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      footerHeight = sizeSpacer();
+      updateReveal();
+    });
+  }
+
+  if (prefersReducedMotion) {
+    footer.classList.add('is-revealed');
+  }
+
+  updateReveal();
 })();
