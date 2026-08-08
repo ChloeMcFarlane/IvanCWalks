@@ -367,11 +367,20 @@
     color: var(--alabaster-grey);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: clamp(2.25rem, 8vw, 3.5rem);
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
     transition: font-size 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    /* Safety net: whatever the clamp() above computes, the logo can never
+       force the nav to overflow — it shrinks within the flex row and, in
+       the worst case, truncates with an ellipsis instead of pushing the
+       hamburger/CTA off-screen (which is what was happening before). */
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .site-nav.is-scrolled .nav-logo {
@@ -379,6 +388,7 @@
   }
 
   .nav-actions {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: clamp(1.25rem, 3vw, 2.25rem);
@@ -509,9 +519,9 @@
   .menu-wrapper.is-open .site-menu li:nth-child(4) a { transition-delay: 0.2s; }
 
   /* ==========================================================================
-     GALLERY — fixed 5x5 grid of autoplaying vertical videos
+     GALLERY — fixed 5-column, 2-row grid of project thumbnails
      Column count never changes; tiles simply shrink with the viewport,
-     so the 5x5 structure holds on mobile too.
+     so the grid shape holds on mobile too.
      ========================================================================== */
 
   .gallery {
@@ -576,7 +586,7 @@
     z-index: 1;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: clamp(0.2rem, 0.9vw, 0.6rem);
   }
 
@@ -593,7 +603,7 @@
     outline-offset: -1px;
   }
 
-  .gallery-video {
+  .gallery-media {
     display: block;
     width: 100%;
     height: 100%;
@@ -602,7 +612,7 @@
     transition: transform 0.6s ease;
   }
 
-  .gallery-item:hover .gallery-video {
+  .gallery-item:hover .gallery-media {
     transform: scale(1.04);
   }
 
@@ -659,13 +669,18 @@
     aspect-ratio: 9 / 16;
     max-width: 88vw;
     transform-style: preserve-3d;
+    /* backface-visibility: hidden was here before — it hides the entire
+       element whenever its back is facing the viewer, i.e. for the whole
+       90deg-270deg middle stretch of the rotation. With only one face
+       (no back content), that made the tile disappear mid-flip instead
+       of staying visible (just mirrored) the whole way through. */
     transform: scale(0.28) rotateY(0deg);
     opacity: 0;
     will-change: transform, opacity;
   }
 
   .gallery-lightbox.is-open .gallery-lightbox-flip {
-    animation: galleryFlipGrow 0.9s cubic-bezier(0.65, 0, 0.18, 1.02) forwards;
+    animation: galleryFlipGrow 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   @keyframes galleryFlipGrow {
@@ -673,8 +688,11 @@
       transform: scale(0.28) rotateY(0deg);
       opacity: 0;
     }
-    45% {
+    12% {
       opacity: 1;
+    }
+    55% {
+      transform: scale(0.72) rotateY(190deg);
     }
     100% {
       transform: scale(1) rotateY(360deg);
@@ -691,7 +709,8 @@
     border: 1px solid rgba(232, 232, 232, 0.14);
   }
 
-  .gallery-lightbox-video {
+  .gallery-lightbox-video,
+  .gallery-lightbox-image {
     display: block;
     width: 100%;
     height: 100%;
@@ -699,12 +718,17 @@
     object-position: center;
   }
 
+  .gallery-lightbox-video.is-hidden,
+  .gallery-lightbox-image.is-hidden {
+    display: none;
+  }
+
   .gallery-lightbox-tag {
     position: absolute;
     top: 0.9rem;
     left: 0.9rem;
     z-index: 2;
-    font-family: var(--font-decaying);
+    font-family: var(--font-sans);
     color: var(--sunflower-gold);
     font-size: 1.15rem;
     letter-spacing: 0.02em;
@@ -736,7 +760,7 @@
     padding: 0.85rem 2.1rem;
     background-color: var(--alabaster-grey);
     color: var(--onyx);
-    font-family: var(--font-accent);
+    font-family: var(--font-sans);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-size: 1rem;
@@ -762,20 +786,294 @@
   }
 
   /* ==========================================================================
+     ABOUT — split layout: statement on the left, portrait on the right.
+     Heading and statement "zoom" in from the right (slow start, fast
+     arrival — an ease-in curve) and clarify from blurred to sharp as they
+     land. The image slides in from the right on its own, gentler curve.
+     All three trigger once, the first time the section enters view.
+     ========================================================================== */
+
+  .about {
+    position: relative;
+    background-color: var(--bg-main);
+    padding: clamp(4rem, 10vw, 8rem) clamp(1.25rem, 5vw, 3rem);
+    overflow: hidden;
+  }
+
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+
+  .about-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .about-heading {
+    font-family: var(--font-bold);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    line-height: 1.05;
+
+    /* Pre-animation state */
+    opacity: 0;
+    transform: translateX(240px) scale(1.1);
+    filter: blur(20px);
+    transition:
+      transform 1.3s cubic-bezier(0.7, 0, 0.84, 0),
+      filter 1.1s ease-out,
+      opacity 0.9s ease-out;
+  }
+
+  .about-statement {
+    font-family: var(--font-sans);
+    color: var(--silver);
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.75;
+    max-width: 34rem;
+
+    /* Pre-animation state — same treatment as the heading, delayed 750ms */
+    opacity: 0;
+    transform: translateX(240px) scale(1.06);
+    filter: blur(16px);
+    transition:
+      transform 1.3s cubic-bezier(0.7, 0, 0.84, 0) 0.75s,
+      filter 1.1s ease-out 0.75s,
+      opacity 0.9s ease-out 0.75s;
+  }
+
+  .about.is-revealed .about-heading,
+  .about.is-revealed .about-statement {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+
+  .about-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: var(--graphite);
+
+    /* Pre-animation state — comes in from the right, gentler than the text */
+    opacity: 0;
+    transform: translateX(280px);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease-out;
+  }
+
+  .about.is-revealed .about-media {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .about-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* ==========================================================================
+     MERCH — a marquee title whose horizontal position is driven entirely
+     by scroll (see js/index.js: it reads scrollY and sets a transform —
+     there's no CSS animation or rAF ticking on its own), two product
+     shots on transparent backgrounds with a white glow standing in for
+     the removed background, and a shop button.
+     ========================================================================== */
+
+  .merch {
+    position: relative;
+    background-color: var(--bg-main);
+    padding: clamp(3rem, 8vw, 6rem) 0 clamp(4rem, 10vw, 7rem);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .merch-marquee {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .merch-marquee-track {
+    display: flex;
+    width: max-content;
+    /* No transition/animation property here on purpose — the transform
+       is written directly, frame by frame, from the scroll position in
+       js/index.js, so the title only ever moves when the page does. */
+    will-change: transform;
+  }
+
+  .merch-marquee-text {
+    font-family: var(--font-bold);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-size: clamp(4rem, 14vw, 11rem);
+    line-height: 1;
+    white-space: nowrap;
+    padding-right: clamp(2rem, 6vw, 5rem);
+  }
+
+  .merch-products {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2rem, 6vw, 5rem);
+    width: 100%;
+    max-width: 66rem;
+    padding: 0 clamp(1.25rem, 5vw, 3rem);
+    margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .merch-product {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 18rem;
+    max-width: 22rem;
+  }
+
+  .merch-product-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    /* The backgrounds were removed from these shots, so this drop-shadow
+       stack stands in as a "back-shadow" — it hugs the actual silhouette
+       of the transparent PNG (unlike a box-shadow, which would just be a
+       rectangle behind it), which is what reads as the merch glowing. */
+    filter:
+      drop-shadow(0 0 18px rgba(255, 255, 255, 0.55))
+      drop-shadow(0 0 46px rgba(255, 255, 255, 0.35))
+      drop-shadow(0 0 90px rgba(255, 255, 255, 0.2));
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+
+  .merch-product:hover .merch-product-image {
+    transform: translateY(-6px);
+    filter:
+      drop-shadow(0 0 22px rgba(255, 255, 255, 0.7))
+      drop-shadow(0 0 60px rgba(255, 255, 255, 0.45))
+      drop-shadow(0 0 110px rgba(255, 255, 255, 0.25));
+  }
+
+  /* Shop button — outline fills solid from the bottom up on hover/focus,
+     text inverts to sit on top of it, arrow nudges right. */
+  .merch-shop-btn {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 1rem 2.75rem;
+    border: 1px solid var(--alabaster-grey);
+    color: var(--alabaster-grey);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.95rem;
+    overflow: hidden;
+    isolation: isolate;
+    transition: color 0.35s ease;
+  }
+
+  .merch-shop-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--alabaster-grey);
+    transform: translateY(101%);
+    transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .merch-shop-btn:hover,
+  .merch-shop-btn:focus-visible {
+    color: var(--onyx);
+  }
+
+  .merch-shop-btn:hover::before,
+  .merch-shop-btn:focus-visible::before {
+    transform: translateY(0);
+  }
+
+  .merch-shop-btn-arrow {
+    display: inline-block;
+    transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .merch-shop-btn:hover .merch-shop-btn-arrow,
+  .merch-shop-btn:focus-visible .merch-shop-btn-arrow {
+    transform: translateX(5px);
+  }
+
+  /* ==========================================================================
      RESPONSIVE DESIGN
      All breakpoint and motion-preference overrides live here, grouped by
      breakpoint, so the whole site's responsive behavior is in one place.
      ========================================================================== */
 
+  /* ---- Tablet / iPad (portrait & landscape, up to 1024px) ---- */
+  @media (max-width: 1024px) {
+    .nav-logo {
+      font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+    }
+
+    .site-nav.is-scrolled .nav-logo {
+      font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    }
+
+    .site-nav-inner {
+      gap: 1.1rem;
+    }
+
+    .gallery-glow {
+      filter: blur(110px) saturate(115%);
+    }
+
+    .gallery-glow::after {
+      filter: blur(120px);
+    }
+  }
+
   /* ---- Mobile nav (up to 768px) ----
      Reuses the same .menu-wrapper.is-open / .menu-btn.active classes the
      desktop pattern already toggles — on narrow screens the dropdown list
-     becomes a fullscreen glass overlay instead, so the same JS drives both. */
+     becomes a fullscreen glass overlay instead, so the same JS drives both.
+     Placed after the 1024px block so these narrower-viewport rules win the
+     cascade instead of being overridden by the wider tablet tier. */
   @media (max-width: 768px) {
     .site-menu {
+      /* Was position:absolute (inherited from desktop), which sizes its
+         100% width against .menu-wrapper — a box that only wraps the
+         ~20px hamburger button, since an absolutely-positioned child
+         doesn't add to its parent's size. That squeezed the "fullscreen"
+         menu into a ~20px sliver pinned to the right edge, with its
+         content overflowing off the right side of the page. Fixing it
+         to the viewport makes 100%/100svh mean what they say. */
+      position: fixed;
       top: 0;
+      left: 0;
       right: 0;
-      width: 100%;
+      width: 100vw;
       height: 100svh;
       align-items: center;
       justify-content: center;
@@ -819,28 +1117,22 @@
     .nav-cta-row[aria-hidden="true"] {
       display: none;
     }
-  }
 
-  /* ---- Tablet / iPad (portrait & landscape, up to 1024px) ---- */
-  @media (max-width: 1024px) {
     .nav-logo {
-      font-size: clamp(2rem, 6vw, 3rem);
+      font-size: clamp(1.1rem, 5.5vw, 1rem);
     }
 
     .site-nav.is-scrolled .nav-logo {
-      font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+      font-size: clamp(0.75rem, 2vw, 0.95rem);
     }
 
-    .site-nav-inner {
-      gap: 1.1rem;
+    .about-inner {
+      grid-template-columns: 1fr;
     }
 
-    .gallery-glow {
-      filter: blur(110px) saturate(115%);
-    }
-
-    .gallery-glow::after {
-      filter: blur(120px);
+    .about-media {
+      aspect-ratio: 16 / 10;
+      order: -1;
     }
   }
 
@@ -884,7 +1176,7 @@
     }
 
     .nav-logo {
-      font-size: clamp(1.6rem, 10vw, 2.4rem);
+      font-size: clamp(1rem, 6.5vw, 1.5rem);
     }
 
     .nav-actions {
@@ -897,6 +1189,11 @@
 
     .site-menu li a {
       font-size: 1.5rem;
+    }
+
+    .merch-shop-btn {
+      padding: 0.9rem 2.1rem;
+      font-size: 0.85rem;
     }
   }
 
@@ -923,7 +1220,7 @@
       transition: none;
     }
 
-    .gallery-video {
+    .gallery-media {
       transition: none;
     }
 
@@ -938,6 +1235,21 @@
     .gallery-lightbox-cta,
     .site-menu,
     .site-menu li a {
+      transition: none;
+    }
+
+    .about-heading,
+    .about-statement,
+    .about-media {
+      transition: none;
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    .merch-product-image,
+    .merch-shop-btn::before,
+    .merch-shop-btn-arrow {
       transition: none;
     }
   }

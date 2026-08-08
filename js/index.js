@@ -327,71 +327,65 @@
   })();
   
   /* ==========================================================================
-     GALLERY — builds the 5x5 vertical video grid and autoplays each tile
+     GALLERY — builds the 5x2 project thumbnail grid from the real imported
+     images, shuffled to a random order on each load.
+
+     NOTE: this list assumes 10 files (enough to fill the 5x2 grid exactly).
+     If the real count of imported "ivan-galleryN.png" files is different,
+     just edit GALLERY_IMAGES below to match — everything else (shuffle,
+     tile creation, lightbox wiring) adapts automatically.
      ========================================================================== */
-  
+
   (function () {
     const grid = document.getElementById('galleryGrid');
     if (!grid) return;
-  
-    const TOTAL_TILES = 25; // 5 x 5
-    const videos = [];
-  
-    for (let i = 1; i <= TOTAL_TILES; i++) {
-      const num = String(i).padStart(2, '0');
-  
+
+    const GALLERY_IMAGES = [
+      'iproj-ASSETS/ivan-gallery1.png',
+      'iproj-ASSETS/ivan-gallery2.png',
+      'iproj-ASSETS/ivan-gallery3.png',
+      'iproj-ASSETS/ivan-gallery4.png',
+      'iproj-ASSETS/ivan-gallery5.png',
+      'iproj-ASSETS/ivan-gallery6.png',
+      'iproj-ASSETS/ivan-gallery7.png',
+      'iproj-ASSETS/ivan-gallery8.png',
+      'iproj-ASSETS/ivan-gallery9.png',
+      'iproj-ASSETS/ivan-gallery10.png',
+    ];
+
+    // Fisher–Yates shuffle
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const shuffled = shuffle(GALLERY_IMAGES);
+
+    shuffled.forEach((src, i) => {
+      const num = i + 1;
+
       const item = document.createElement('div');
       item.className = 'gallery-item';
-      // Replace with the real vertical video files/paths
-      item.dataset.src = `iproj-ASSETS/iproj-gallery-${num}.mp4`;
-      item.dataset.project = num;
+      item.dataset.src = src;
+      item.dataset.project = String(num).padStart(2, '0');
       item.setAttribute('role', 'button');
       item.setAttribute('tabindex', '0');
       item.setAttribute('aria-label', `Preview project ${num}`);
-  
-      const video = document.createElement('video');
-      video.className = 'gallery-video';
-      video.src = item.dataset.src;
-      video.loop = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.setAttribute('aria-hidden', 'true');
-  
-      item.appendChild(video);
+
+      const img = document.createElement('img');
+      img.className = 'gallery-media';
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+
+      item.appendChild(img);
       grid.appendChild(item);
-      videos.push(video);
-    }
-  
-    // All 25 are meant to autoplay, but only while their tile is actually
-    // on screen — this keeps 25 simultaneous decodes from hammering battery
-    // and CPU (especially on mobile) once the grid scrolls out of view.
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const video = entry.target;
-            if (entry.isIntersecting) {
-              video.play().catch(() => {
-                /* Autoplay can be blocked until user interaction on some
-                   browsers; it will start on first tap/scroll interaction. */
-              });
-            } else {
-              video.pause();
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-  
-      videos.forEach((video) => observer.observe(video));
-    } else {
-      // No IntersectionObserver support — just autoplay everything.
-      videos.forEach((video) => {
-        video.autoplay = true;
-        video.play().catch(() => {});
-      });
-    }
+    });
   })();
   
   /* ==========================================================================
@@ -405,39 +399,59 @@
     const backdrop    = document.getElementById('galleryLightboxBackdrop');
     const flipWrap      = document.getElementById('galleryLightboxFlip');
     const previewVideo    = document.getElementById('galleryLightboxVideo');
-    const tag               = document.getElementById('galleryLightboxTag');
-    const cta                 = document.getElementById('galleryLightboxCta');
-    const closeBtn              = document.getElementById('galleryLightboxClose');
-    const grid                    = document.getElementById('galleryGrid');
-    if (!lightbox || !backdrop || !flipWrap || !previewVideo || !grid) return;
-  
+    const previewImage      = document.getElementById('galleryLightboxImage');
+    const tag                 = document.getElementById('galleryLightboxTag');
+    const cta                   = document.getElementById('galleryLightboxCta');
+    const closeBtn                = document.getElementById('galleryLightboxClose');
+    const grid                      = document.getElementById('galleryGrid');
+    if (!lightbox || !backdrop || !flipWrap || !previewVideo || !previewImage || !grid) return;
+
+    const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif'];
+
+    function isImageSrc(src) {
+      const lower = src.toLowerCase();
+      return IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext));
+    }
+
     let lastFocused = null;
-  
+
     function openLightbox(tile) {
       const src     = tile.dataset.src;
       const project = tile.dataset.project;
       if (!src) return;
-  
-      previewVideo.src = src;
-      previewVideo.currentTime = 0;
-      previewVideo.play().catch(() => {});
+
+      if (isImageSrc(src)) {
+        previewVideo.pause();
+        previewVideo.removeAttribute('src');
+        previewVideo.classList.add('is-hidden');
+        previewImage.src = src;
+        previewImage.classList.remove('is-hidden');
+      } else {
+        previewImage.classList.add('is-hidden');
+        previewImage.removeAttribute('src');
+        previewVideo.classList.remove('is-hidden');
+        previewVideo.src = src;
+        previewVideo.currentTime = 0;
+        previewVideo.play().catch(() => {});
+      }
+
       tag.textContent = 'Project ' + project;
       // Replace with the real per-project route once the full gallery page exists.
       cta.setAttribute('href', `gallery.html?project=${project}`);
-  
+
       lastFocused = document.activeElement;
-  
+
       // Force a reflow so the flip/grow animation restarts even if a
       // different tile was just open (class was already present).
       lightbox.classList.remove('is-open');
       void lightbox.offsetWidth;
       lightbox.classList.add('is-open');
       lightbox.setAttribute('aria-hidden', 'false');
-  
+
       document.body.style.overflow = 'hidden';
       closeBtn.focus();
     }
-  
+
     function closeLightbox() {
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -445,9 +459,10 @@
       previewVideo.pause();
       previewVideo.removeAttribute('src');
       previewVideo.load();
+      previewImage.removeAttribute('src');
       if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
     }
-  
+
     grid.addEventListener('click', (e) => {
       const tile = e.target.closest('.gallery-item');
       if (tile) openLightbox(tile);
@@ -468,3 +483,94 @@
       if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
     });
   })();
+
+/* ==========================================================================
+   ABOUT — triggers the zoom/blur/slide-in reveal once, the first time the
+   section scrolls into view. CSS handles all the actual animation; this
+   just flips the class.
+   ========================================================================== */
+
+(function () {
+  const about = document.getElementById('about');
+  if (!about) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    about.classList.add('is-revealed');
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          about.classList.add('is-revealed');
+          obs.unobserve(about);
+        }
+      });
+    },
+    // Was threshold: 0.3 (fired as soon as 30% of the section was in
+    // view — too early). Bumped up + a negative bottom rootMargin so the
+    // section has to scroll noticeably further up before it reveals.
+    { threshold: 0.55, rootMargin: '0px 0px -10% 0px' }
+  );
+
+  observer.observe(about);
+})();
+
+/* ==========================================================================
+   MERCH MARQUEE — the "MERCH" title's horizontal position is a direct
+   function of scroll position, not time. There is no CSS animation and
+   no independent rAF loop driving it: every scroll event just writes a
+   translateX derived from window.scrollY. Several "Merch" labels are
+   repeated back to back in the track, and the offset is wrapped with a
+   modulo, so as one label scrolls out of view on one side, the next one
+   is always already in place to take over on the other — an infinite
+   loop that only advances when the page itself moves.
+   ========================================================================== */
+
+(function () {
+  const track = document.getElementById('merchMarqueeTrack');
+  if (!track) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // How far the marquee shifts per pixel of page scroll.
+  const SCROLL_SPEED = 0.55;
+
+  // The width of a single "Merch" label, including its trailing gap —
+  // this is the loop length: once the track has shifted this far, it's
+  // visually identical to shifting 0, so wrapping here is seamless.
+  let itemWidth = 0;
+
+  function measure() {
+    const first = track.children[0];
+    if (!first) return;
+    itemWidth = first.getBoundingClientRect().width;
+  }
+
+  function update(scrollY) {
+    if (!itemWidth) measure();
+    if (!itemWidth) return;
+    const raw = scrollY * SCROLL_SPEED;
+    // Double modulo keeps the offset positive even if scrollY is ever
+    // negative (elastic overscroll on some browsers/trackpads).
+    const offset = ((raw % itemWidth) + itemWidth) % itemWidth;
+    track.style.transform = 'translateX(-' + offset + 'px)';
+  }
+
+  measure();
+  window.addEventListener('resize', measure);
+
+  if (prefersReducedMotion) {
+    track.style.transform = 'translateX(0)';
+    return;
+  }
+
+  // Lenis (wired up in the nav module above) smooths native scrolling
+  // itself, so window.scrollY already reflects the eased position — a
+  // plain scroll listener is enough to stay in sync with it either way.
+  window.addEventListener('scroll', () => update(window.scrollY), { passive: true });
+  update(window.scrollY);
+})();
