@@ -1,16 +1,16 @@
 /* ==========================================================================
    PRELOADER + HERO SEQUENCE
-   - Animates the load bar 0 → 100%
-   - Waits for the hero carousel's images to actually be ready
-   - Fades the preloader out and the hero scrim back, revealing the carousel
    ========================================================================== */
 
    (function () {
-    const preloader     = document.getElementById('preloader');
-    const barFill        = document.getElementById('loadBarFill');
-    const percentLabel    = document.getElementById('loadPercent');
-    const heroScrim        = document.getElementById('heroScrim');
-    const carouselTrack      = document.getElementById('carouselTrack');
+    const preloader = document.getElementById('preloader');
+    const barFill = document.getElementById('loadBarFill');
+    const percentLabel = document.getElementById('loadPercent');
+    const heroScrim = document.getElementById('heroScrim');
+    const carouselTrack = document.getElementById('carouselTrack');
+  
+    // If the preloader element does not exist on the page, abort cleanly.
+    if (!preloader) return;
   
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
@@ -21,8 +21,8 @@
   
     function setProgress(value) {
       const clamped = Math.max(0, Math.min(100, value));
-      barFill.style.width = clamped + '%';
-      percentLabel.textContent = Math.round(clamped) + '%';
+      if (barFill) barFill.style.width = clamped + '%';
+      if (percentLabel) percentLabel.textContent = Math.round(clamped) + '%';
     }
   
     function finishSequence() {
@@ -32,8 +32,8 @@
   
       const reveal = () => {
         preloader.classList.add('is-hidden');
-        heroScrim.classList.add('is-faded');
-        if (window.heroCarousel) {
+        if (heroScrim) heroScrim.classList.add('is-faded');
+        if (window.heroCarousel && typeof window.heroCarousel.start === 'function') {
           window.heroCarousel.start();
         }
       };
@@ -59,8 +59,6 @@
       requestAnimationFrame(tick);
     }
   
-    // Simulated progress: eases up to 92% on its own, then holds until the
-    // carousel images signal ready. Ramp is 3200ms — slowed down for feel.
     function simulateProgress() {
       const start = performance.now();
       const duration = 3200;
@@ -69,7 +67,10 @@
         const elapsed = now - start;
         const t = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - t, 3);
-        targetProgress = eased * 92;
+        
+        if (!imagesReady) {
+          targetProgress = eased * 92;
+        }
   
         if (t < 1 && !imagesReady) {
           requestAnimationFrame(step);
@@ -100,7 +101,7 @@
       }
   
       imgs.forEach((img) => {
-        if (img.complete) {
+        if (img.complete && img.naturalWidth !== 0) {
           settle();
         } else {
           img.addEventListener('load', settle, { once: true });
@@ -108,8 +109,8 @@
         }
       });
   
-      // Don't trap the user on the loading screen indefinitely.
-      setTimeout(onImagesReady, 6000);
+      // Fallback safety timeout (reduced from 6s to 3s for better user experience)
+      setTimeout(onImagesReady, 3000);
     }
   
     if (prefersReducedMotion) {
@@ -130,11 +131,14 @@
     const carousel = document.getElementById('heroCarousel');
     if (!carousel) return;
   
-    const track    = document.getElementById('carouselTrack');
-    const slides   = Array.from(track.children);
-    const prevBtn  = document.getElementById('carouselPrev');
-    const nextBtn  = document.getElementById('carouselNext');
-    const dots     = Array.from(document.getElementById('carouselDots').children);
+    const track = document.getElementById('carouselTrack');
+    const slides = track ? Array.from(track.children) : [];
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+    const dotsContainer = document.getElementById('carouselDots');
+    const dots = dotsContainer ? Array.from(dotsContainer.children) : [];
+  
+    if (!track || slides.length === 0) return;
   
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const AUTOPLAY_DELAY = 5000;
@@ -174,8 +178,9 @@
       startAutoplay();
     }
   
-    prevBtn.addEventListener('click', () => { prev(); restartAutoplay(); });
-    nextBtn.addEventListener('click', () => { next(); restartAutoplay(); });
+    if (prevBtn) prevBtn.addEventListener('click', () => { prev(); restartAutoplay(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { next(); restartAutoplay(); });
+    
     dots.forEach((dot, i) => {
       dot.addEventListener('click', () => { goTo(i); restartAutoplay(); });
     });
@@ -185,14 +190,12 @@
     carousel.addEventListener('focusin', stopAutoplay);
     carousel.addEventListener('focusout', restartAutoplay);
   
-    // Keyboard support
     carousel.setAttribute('tabindex', '0');
     carousel.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') { next(); restartAutoplay(); }
       if (e.key === 'ArrowLeft')  { prev(); restartAutoplay(); }
     });
   
-    // Touch / pointer swipe
     let dragStartX = null;
     let dragging = false;
   
@@ -221,7 +224,6 @@
   
     render();
   
-    // Exposed so the preloader can kick off autoplay once the hero is revealed.
     window.heroCarousel = {
       start() {
         if (started) return;
@@ -236,16 +238,14 @@
      ========================================================================== */
   
   (function () {
-    const nav        = document.getElementById('siteNav');
-    const menuBtn     = document.getElementById('menuBtn');
-    const menuWrapper  = document.getElementById('menuWrapper');
-    const siteMenu      = document.getElementById('siteMenu');
+    const nav = document.getElementById('siteNav');
+    const menuBtn = document.getElementById('menuBtn');
+    const menuWrapper = document.getElementById('menuWrapper');
+    const siteMenu = document.getElementById('siteMenu');
     if (!nav || !menuBtn || !menuWrapper || !siteMenu) return;
   
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
-    // --- Lenis smooth scroll (falls back to native smooth scroll if the
-    //     CDN script didn't load, e.g. offline) ---
     let lenis = null;
     if (window.Lenis && !prefersReducedMotion) {
       lenis = new window.Lenis({
@@ -268,7 +268,6 @@
       }
     }
   
-    // --- Shrink logo + reveal glass blur once the page has scrolled ---
     const SCROLL_THRESHOLD = 40;
   
     function updateScrollState(scrollY) {
@@ -282,7 +281,6 @@
     }
     updateScrollState(window.scrollY);
   
-    // --- Menu open/close ---
     function openMenu() {
       menuWrapper.classList.add('is-open');
       menuBtn.classList.add('active');
@@ -309,7 +307,6 @@
       if (e.key === 'Escape') closeMenu();
     });
   
-    // --- Anchor links (logo, nav menu, CTA) scroll smoothly + close menu ---
     const navLinks = [document.getElementById('navLogo'), ...nav.querySelectorAll('a[href^="#"]')];
   
     navLinks.forEach((link) => {
@@ -318,7 +315,7 @@
         const hash = link.getAttribute('href');
         if (!hash || !hash.startsWith('#')) return;
         const target = document.querySelector(hash);
-        if (!target) return; // section not built yet — let it no-op quietly
+        if (!target) return;
         e.preventDefault();
         closeMenu();
         smoothScrollTo(target);
@@ -327,19 +324,13 @@
   })();
   
   /* ==========================================================================
-     GALLERY — builds the 5x2 project thumbnail grid from the real imported
-     images, shuffled to a random order on each load.
-
-     NOTE: this list assumes 10 files (enough to fill the 5x2 grid exactly).
-     If the real count of imported "ivan-galleryN.png" files is different,
-     just edit GALLERY_IMAGES below to match — everything else (shuffle,
-     tile creation, lightbox wiring) adapts automatically.
+     GALLERY — builds the thumbnail grid
      ========================================================================== */
-
+  
   (function () {
     const grid = document.getElementById('galleryGrid');
     if (!grid) return;
-
+  
     const GALLERY_IMAGES = [
       'iproj-ASSETS/ivan-gallery15.JPG',
       'iproj-ASSETS/ivan-gallery1.mp4',
@@ -352,8 +343,7 @@
       'iproj-ASSETS/ivan-gallery11.jpeg',
       'iproj-ASSETS/ivan-gallery13.jpeg',
     ];
-
-    // Fisher–Yates shuffle
+  
     function shuffle(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -362,12 +352,12 @@
       }
       return a;
     }
-
+  
     const shuffled = shuffle(GALLERY_IMAGES);
-
+  
     shuffled.forEach((src, i) => {
       const num = i + 1;
-
+  
       const item = document.createElement('div');
       item.className = 'gallery-item';
       item.dataset.src = src;
@@ -375,14 +365,14 @@
       item.setAttribute('role', 'button');
       item.setAttribute('tabindex', '0');
       item.setAttribute('aria-label', `Preview project ${num}`);
-
+  
       const img = document.createElement('img');
       img.className = 'gallery-media';
       img.src = src;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
-
+  
       item.appendChild(img);
       grid.appendChild(item);
     });
@@ -393,41 +383,32 @@
      ========================================================================== */
   
   (function () {
-    const lightbox   = document.getElementById('galleryLightbox');
-    const backdrop    = document.getElementById('galleryLightboxBackdrop');
-    const flipWrap      = document.getElementById('galleryLightboxFlip');
-    const previewVideo    = document.getElementById('galleryLightboxVideo');
-    const previewImage      = document.getElementById('galleryLightboxImage');
-    const tag                 = document.getElementById('galleryLightboxTag');
-    const cta                   = document.getElementById('galleryLightboxCta');
-    const closeBtn                = document.getElementById('galleryLightboxClose');
-    const grid                      = document.getElementById('galleryGrid');
+    const lightbox = document.getElementById('galleryLightbox');
+    const backdrop = document.getElementById('galleryLightboxBackdrop');
+    const flipWrap = document.getElementById('galleryLightboxFlip');
+    const previewVideo = document.getElementById('galleryLightboxVideo');
+    const previewImage = document.getElementById('galleryLightboxImage');
+    const tag = document.getElementById('galleryLightboxTag');
+    const cta = document.getElementById('galleryLightboxCta');
+    const closeBtn = document.getElementById('galleryLightboxClose');
+    const grid = document.getElementById('galleryGrid');
     if (!lightbox || !backdrop || !flipWrap || !previewVideo || !previewImage || !grid) return;
-
+  
     const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif'];
-
+  
     function isImageSrc(src) {
       const lower = src.toLowerCase();
       return IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext));
     }
-
-    /* Preload + decode each tile's asset ahead of time (on hover/focus,
-       well before the tile is actually clicked) so the flip never has
-       to wait on a network fetch or a synchronous decode mid-animation.
-       That decode-on-open was the real cause of the flip looking
-       delayed or like it was skipping its opening frames — the rotation
-       itself is plain CSS and was never the bottleneck. */
+  
     const preloaded = new Set();
-
+  
     function preload(src) {
       if (!src || preloaded.has(src)) return;
       preloaded.add(src);
       if (isImageSrc(src)) {
         const img = new Image();
         img.src = src;
-        // decode() runs off the main thread and warms the browser's
-        // decoded-bitmap cache at full size, so setting previewImage.src
-        // later reuses that work instead of decoding fresh mid-flip.
         if (img.decode) img.decode().catch(() => {});
       } else {
         const video = document.createElement('video');
@@ -437,30 +418,27 @@
         video.load();
       }
     }
-
+  
     grid.addEventListener('pointerover', (e) => {
       const tile = e.target.closest('.gallery-item');
       if (tile) preload(tile.dataset.src);
     });
-
+  
     grid.addEventListener('focusin', (e) => {
       const tile = e.target.closest('.gallery-item');
       if (tile) preload(tile.dataset.src);
     });
-
+  
     let lastFocused = null;
-
+  
     function openLightbox(tile) {
-      const src     = tile.dataset.src;
+      const src = tile.dataset.src;
       const project = tile.dataset.project;
       if (!src) return;
-
-      // The tile's own thumbnail is already decoded and on screen — reuse
-      // it as the video poster so there's an instant frame the moment the
-      // flip starts, rather than a blank wrap while the video buffers.
+  
       const thumb = tile.querySelector('.gallery-media');
       const posterSrc = thumb ? thumb.currentSrc || thumb.src : '';
-
+  
       if (isImageSrc(src)) {
         previewVideo.pause();
         previewVideo.removeAttribute('src');
@@ -477,22 +455,12 @@
         previewVideo.currentTime = 0;
         previewVideo.play().catch(() => {});
       }
-
-      tag.textContent = 'Project ' + project;
-      // Replace with the real per-project route once the full gallery page exists.
-      cta.setAttribute('href', `gallery.html?project=${project}`);
-
+  
+      if (tag) tag.textContent = 'Project ' + project;
+      if (cta) cta.setAttribute('href', `gallery.html?project=${project}`);
+  
       lastFocused = document.activeElement;
-
-      // Reset to the closed state, then wait two animation frames before
-      // adding "is-open". This used to be a synchronous forced reflow
-      // (reading offsetWidth right before flipping the class in the same
-      // tick), which doesn't actually guarantee the browser paints the
-      // reset state as its own frame — under any load (like the image
-      // work happening above) the browser can coalesce that reset away
-      // and the flip's first frames never get painted, which is what
-      // showed up as a delayed start / skipped opening rotation. Two
-      // nested rAFs guarantee a real committed paint in between.
+  
       lightbox.classList.remove('is-open');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -500,11 +468,11 @@
         });
       });
       lightbox.setAttribute('aria-hidden', 'false');
-
+  
       document.body.style.overflow = 'hidden';
-      closeBtn.focus();
+      if (closeBtn) closeBtn.focus();
     }
-
+  
     function closeLightbox() {
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -515,7 +483,7 @@
       previewImage.removeAttribute('src');
       if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
     }
-
+  
     grid.addEventListener('click', (e) => {
       const tile = e.target.closest('.gallery-item');
       if (tile) openLightbox(tile);
@@ -530,190 +498,152 @@
     });
   
     backdrop.addEventListener('click', closeLightbox);
-    closeBtn.addEventListener('click', closeLightbox);
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
   
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
     });
   })();
-
-/* ==========================================================================
-   ABOUT
-   ========================================================================== */
-
-(function () {
-  const about = document.getElementById('about');
-  if (!about) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-    about.classList.add('is-revealed');
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          about.classList.add('is-revealed');
-          obs.unobserve(about);
-        }
-      });
-    },
-    // Was threshold: 0.3 (fired as soon as 30% of the section was in
-    // view — too early). Bumped up + a negative bottom rootMargin so the
-    // section has to scroll noticeably further up before it reveals.
-    { threshold: 0.55, rootMargin: '0px 0px -10% 0px' }
-  );
-
-  observer.observe(about);
-})();
-
-/* ==========================================================================
-   MERCH MARQUEE
-   ========================================================================== */
-
-(function () {
-  const images = Array.from(document.querySelectorAll('.merch-product-image'));
-  if (!images.length) return;
-
-  function reveal(img) {
-    img.classList.add('is-loaded');
-    const product = img.closest('.merch-product');
-    if (product) product.classList.add('is-glowing');
-  }
-
-  images.forEach((img) => {
-    // decode() (where available) waits for the bitmap to actually be
-    // ready to paint, which is a stronger guarantee than the 'load'
-    // event and avoids any single frame where the glow filter has
-    // nothing but empty layout box to render around.
-    if (img.complete && img.naturalWidth > 0) {
-      reveal(img);
+  
+  /* ==========================================================================
+     ABOUT
+     ========================================================================== */
+  
+  (function () {
+    const about = document.getElementById('about');
+    if (!about) return;
+  
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      about.classList.add('is-revealed');
       return;
     }
-    if (img.decode) {
-      img.decode().then(() => reveal(img)).catch(() => {
-        // decode() can reject on some browsers even for a valid image
-        // that still finishes loading — fall back to the load event.
-        if (img.complete) reveal(img);
+  
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            about.classList.add('is-revealed');
+            obs.unobserve(about);
+          }
+        });
+      },
+      { threshold: 0.55, rootMargin: '0px 0px -10% 0px' }
+    );
+  
+    observer.observe(about);
+  })();
+  
+  /* ==========================================================================
+     MERCH MARQUEE
+     ========================================================================== */
+  
+  (function () {
+    const images = Array.from(document.querySelectorAll('.merch-product-image'));
+    if (!images.length) return;
+  
+    function reveal(img) {
+      img.classList.add('is-loaded');
+    }
+  
+    images.forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        reveal(img);
+        return;
+      }
+      if (img.decode) {
+        img.decode().then(() => reveal(img)).catch(() => {
+          if (img.complete) reveal(img);
+        });
+      }
+      img.addEventListener('load', () => reveal(img), { once: true });
+    });
+  })();
+  
+  (function () {
+    const track = document.getElementById('merchMarqueeTrack');
+    if (!track) return;
+  
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const SCROLL_SPEED = 0.55;
+  
+    let itemWidth = 0;
+  
+    function measure() {
+      const first = track.children[0];
+      if (!first) return;
+      itemWidth = first.getBoundingClientRect().width;
+    }
+  
+    function update(scrollY) {
+      if (!itemWidth) measure();
+      if (!itemWidth) return;
+      const raw = scrollY * SCROLL_SPEED;
+      const offset = ((raw % itemWidth) + itemWidth) % itemWidth;
+      track.style.transform = 'translateX(-' + offset + 'px)';
+    }
+  
+    measure();
+    window.addEventListener('resize', measure);
+  
+    if (prefersReducedMotion) {
+      track.style.transform = 'translateX(0)';
+      return;
+    }
+  
+    window.addEventListener('scroll', () => update(window.scrollY), { passive: true });
+    update(window.scrollY);
+  })();
+  
+  /* ==========================================================================
+     FOOTER
+     ========================================================================== */
+  
+  (function () {
+    const footer = document.getElementById('contact');
+    const pageWrap = document.getElementById('pageWrap');
+    if (!footer || !footer.classList.contains('site-footer') || !pageWrap) return;
+  
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+    function sizeSpacer() {
+      pageWrap.style.paddingBottom = '0px';
+      const h = footer.offsetHeight;
+      pageWrap.style.paddingBottom = h + 'px';
+      return h;
+    }
+  
+    let footerHeight = sizeSpacer();
+  
+    function updateReveal() {
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      const revealAt = docHeight - footerHeight * 0.65;
+      footer.classList.toggle('is-revealed', scrollBottom >= revealAt);
+    }
+  
+    window.addEventListener('scroll', updateReveal, { passive: true });
+  
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        footerHeight = sizeSpacer();
+        updateReveal();
+      }, 150);
+    });
+  
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        footerHeight = sizeSpacer();
+        updateReveal();
       });
     }
-    img.addEventListener('load', () => reveal(img), { once: true });
-  });
-})();
-
-(function () {
-  const track = document.getElementById('merchMarqueeTrack');
-  if (!track) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // How far the marquee shifts per pixel of page scroll.
-  // Was 0.55 — bumped up so it visibly moves left quicker per scroll,
-  // same scroll-linked mechanism (not autoplay), just a faster ratio.
-  const SCROLL_SPEED = 1.15;
-
-  // The width of a single "Merch" label, including its trailing gap —
-  // this is the loop length: once the track has shifted this far, it's
-  // visually identical to shifting 0, so wrapping here is seamless.
-  let itemWidth = 0;
-
-  function measure() {
-    const first = track.children[0];
-    if (!first) return;
-    itemWidth = first.getBoundingClientRect().width;
-  }
-
-  function update(scrollY) {
-    if (!itemWidth) measure();
-    if (!itemWidth) return;
-    const raw = scrollY * SCROLL_SPEED;
-    // Double modulo keeps the offset positive even if scrollY is ever
-    // negative (elastic overscroll on some browsers/trackpads).
-    const offset = ((raw % itemWidth) + itemWidth) % itemWidth;
-    track.style.transform = 'translateX(-' + offset + 'px)';
-  }
-
-  measure();
-  window.addEventListener('resize', measure);
-
-  if (prefersReducedMotion) {
-    track.style.transform = 'translateX(0)';
-    return;
-  }
-
-  // Lenis (wired up in the nav module above) smooths native scrolling
-  // itself, so window.scrollY already reflects the eased position — a
-  // plain scroll listener is enough to stay in sync with it either way.
-  window.addEventListener('scroll', () => update(window.scrollY), { passive: true });
-  update(window.scrollY);
-})();
-
-/* ==========================================================================
-   FOOTER — pinned behind .page-wrap (see CSS). Two jobs here:
-
-   1. Keep .page-wrap's bottom spacer sized to the footer's real (responsive)
-      height, so there's exactly enough scroll runway to fully uncover it.
-   2. Toggle the staggered content reveal based on actual scroll position —
-      NOT IntersectionObserver, because a position:fixed element's geometric
-      box always overlaps the viewport rectangle regardless of whether
-      .page-wrap is currently covering it, so IO would fire immediately on
-      load rather than only once you've actually scrolled to it. This also
-      makes the reveal naturally bidirectional: scroll down past the
-      threshold, rows fade in; scroll back up above it, they reverse — same
-      one class flip, just driven by where you actually are on the page.
-   ========================================================================== */
-
-(function () {
-  const footer = document.getElementById('contact');
-  const pageWrap = document.getElementById('pageWrap');
-  if (!footer || !footer.classList.contains('site-footer') || !pageWrap) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function sizeSpacer() {
-    // Measure with the spacer briefly cleared so we get the footer's true
-    // content height, not a height inflated by a stale previous spacer.
-    pageWrap.style.paddingBottom = '0px';
-    const h = footer.offsetHeight;
-    pageWrap.style.paddingBottom = h + 'px';
-    return h;
-  }
-
-  let footerHeight = sizeSpacer();
-
-  function updateReveal() {
-    const scrollBottom = window.scrollY + window.innerHeight;
-    const docHeight = document.documentElement.scrollHeight;
-    // Starts revealing once the viewport bottom enters the last ~65% of
-    // the footer's spacer region; fully revealed at the true page bottom.
-    const revealAt = docHeight - footerHeight * 0.65;
-    footer.classList.toggle('is-revealed', scrollBottom >= revealAt);
-  }
-
-  window.addEventListener('scroll', updateReveal, { passive: true });
-
-  let resizeTimer = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      footerHeight = sizeSpacer();
-      updateReveal();
-    }, 150);
-  });
-
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => {
-      footerHeight = sizeSpacer();
-      updateReveal();
-    });
-  }
-
-  if (prefersReducedMotion) {
-    footer.classList.add('is-revealed');
-  }
-
-  updateReveal();
-})();
+  
+    if (prefersReducedMotion) {
+      footer.classList.add('is-revealed');
+    }
+  
+    updateReveal();
+  })();

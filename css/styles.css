@@ -969,194 +969,188 @@
      ========================================================================== */
   .page-wrap {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     background-color: var(--bg-main);
   }
 
-  /* ==========================================================================
-     FOOTER / CONTACT (RECURRING SCROLL & RESPONSIVE CLAMP FIXED)
-     Pinned to the bottom of the viewport, sitting BEHIND .page-wrap (lower
-     z-index). It never moves — .page-wrap scrolling normally over top of it
-     is what makes it look like it "pops up" as you reach the bottom of the
-     page, and "recedes" as you scroll back up. This is why .page-wrap has a
-     bottom spacer sized to this element's real height (set via JS).
+/* ==========================================================================
+     FOOTER / CONTACT
      ========================================================================== */
-  .site-footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    z-index: 0;
-    overflow: hidden;
-    background-color: var(--bg-main);
-    padding: clamp(3rem, 8vw, 5.5rem) clamp(1.25rem, 5vw, 3rem);
-  }
-  
-  .footer-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-color: var(--graphite);
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
-  }
-  
-  .site-footer.is-revealed .footer-bg {
-    transform: scaleY(1);
-  }
-  
-  .footer-inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: clamp(1.5rem, 4vw, 4rem);
-    max-width: 90rem;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-  .footer-row {
-    flex: 1 1 0;
-    min-width: 0; /* Prevents text overflow breaking layouts */
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  .site-footer.is-revealed .footer-row--name {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.35s;
-  }
-  
-  .site-footer.is-revealed .footer-row--mid {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.55s;
-  }
-  
-  .site-footer.is-revealed .footer-row--email {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.75s;
-  }
-  
-  .footer-name {
-    display: block;
-    font-family: var(--font-bold);
-    color: var(--alabaster-grey);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    font-size: clamp(1.75rem, 3.5vw, 3.5rem); /* Responsive fluid clamping */
-    line-height: 1.1;
-    word-break: break-word;
-  }
-  
-  .footer-row--mid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.25rem;
-  }
-  
-  .footer-tagline {
-    font-family: var(--font-sans);
-    color: var(--silver);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: clamp(0.9rem, 1.2vw, 1.4rem);
-  }
-  
-  .footer-tagline em {
-    color: var(--sunflower-gold);
-    font-style: normal;
-  }
-  
-  .footer-socials {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  
-  .footer-social-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.55rem 1.25rem;
-    border: 1px solid var(--alabaster-grey);
-    color: var(--alabaster-grey);
-    font-family: var(--font-sans);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 0.75rem;
-    overflow: hidden;
-    isolation: isolate;
-    transition: color 0.35s ease;
-  }
-  
-  .footer-social-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: rgb(229, 125, 227);
-    transform: translateY(101%);
-    transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
-  }
-  
-  .footer-social-btn:hover,
-  .footer-social-btn:focus-visible {
-    color: var(--onyx);
-  }
-  
-  .footer-social-btn:hover::before,
-  .footer-social-btn:focus-visible::before {
-    transform: translateY(0);
-  }
-  
-  .footer-row--email {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-    gap: 0.5rem;
-  }
-  
-  /* White Header above Email */
-  .footer-contact-header {
-    font-family: var(--font-bold);
-    color: var(--white);
-    text-transform: uppercase;
-    font-size: clamp(1.2rem, 2vw, 2rem);
-    letter-spacing: 0.04em;
-    line-height: 1;
-  }
-  
-  .footer-email {
-    position: relative;
-    color: var(--alabaster-grey);
-    font-family: var(--font-sans);
-    font-size: clamp(0.85rem, 1.3vw, 1.3rem); /* Dynamic clamp matching nav scaling */
-    letter-spacing: 0.02em;
-    padding-bottom: 0.2rem;
-    background-image: linear-gradient(var(--alabaster-grey), var(--alabaster-grey));
-    background-size: 0% 1px;
-    background-repeat: no-repeat;
-    background-position: left bottom;
-    transition: background-size 0.4s cubic-bezier(0.77, 0, 0.175, 1), color 0.3s ease;
-    word-break: break-all;
-  }
-  
-  .footer-email:hover,
-  .footer-email:focus-visible {
-    background-size: 100% 1px;
-    color: var(--sunflower-gold);
-  }
+     .site-footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      z-index: 1;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      padding: clamp(3rem, 8vw, 5.5rem) clamp(1.25rem, 5vw, 3rem);
+    }
+    
+    .footer-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-color: var(--graphite);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    .site-footer.is-revealed .footer-bg {
+      transform: scaleY(1);
+    }
+    
+    .footer-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: clamp(1.5rem, 4vw, 4rem);
+      max-width: 90rem;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .footer-row {
+      flex: 1 1 0;
+      min-width: 0;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .site-footer.is-revealed .footer-row--name {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.35s;
+    }
+    
+    .site-footer.is-revealed .footer-row--mid {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.55s;
+    }
+    
+    .site-footer.is-revealed .footer-row--email {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.75s;
+    }
+    
+    .footer-name {
+      display: block;
+      font-family: var(--font-bold);
+      color: var(--alabaster-grey);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      font-size: clamp(1.75rem, 3.5vw, 3.5rem);
+      line-height: 1.1;
+      word-break: break-word;
+    }
+    
+    .footer-row--mid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.25rem;
+    }
+    
+    .footer-tagline {
+      font-family: var(--font-sans);
+      color: var(--silver);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: clamp(0.9rem, 1.2vw, 1.4rem);
+    }
+    
+    .footer-tagline em {
+      color: var(--sunflower-gold);
+      font-style: normal;
+    }
+    
+    .footer-socials {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    
+    .footer-social-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.55rem 1.25rem;
+      border: 1px solid var(--alabaster-grey);
+      color: var(--alabaster-grey);
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      overflow: hidden;
+      isolation: isolate;
+      transition: color 0.35s ease;
+    }
+    
+    .footer-social-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-color: rgb(229, 125, 227);
+      transform: translateY(101%);
+      transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    
+    .footer-social-btn:hover,
+    .footer-social-btn:focus-visible {
+      color: var(--onyx);
+    }
+    
+    .footer-social-btn:hover::before,
+    .footer-social-btn:focus-visible::before {
+      transform: translateY(0);
+    }
+    
+    .footer-row--email {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      gap: 0.5rem;
+    }
+    
+    .footer-contact-header {
+      font-family: var(--font-bold);
+      color: var(--white);
+      text-transform: uppercase;
+      font-size: clamp(1.2rem, 2vw, 2rem);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    
+    .footer-email {
+      position: relative;
+      color: var(--alabaster-grey);
+      font-family: var(--font-sans);
+      font-size: clamp(0.85rem, 1.3vw, 1.3rem);
+      letter-spacing: 0.02em;
+      padding-bottom: 0.2rem;
+      background-image: linear-gradient(var(--alabaster-grey), var(--alabaster-grey));
+      background-size: 0% 1px;
+      background-repeat: no-repeat;
+      background-position: left bottom;
+      transition: background-size 0.4s cubic-bezier(0.77, 0, 0.175, 1), color 0.3s ease;
+      word-break: break-all;
+    }
+    
+    .footer-email:hover,
+    .footer-email:focus-visible {
+      background-size: 100% 1px;
+      color: var(--sunflower-gold);
+    }
   
   /* ==========================================================================
      RESPONSIVE DESIGN
