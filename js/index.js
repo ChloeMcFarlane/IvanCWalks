@@ -602,48 +602,26 @@
   
   (function () {
     const footer = document.getElementById('contact');
-    const pageWrap = document.getElementById('pageWrap');
-    if (!footer || !footer.classList.contains('site-footer') || !pageWrap) return;
-  
+    if (!footer || !footer.classList.contains('site-footer')) return;
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-    function sizeSpacer() {
-      pageWrap.style.paddingBottom = '0px';
-      const h = footer.offsetHeight;
-      pageWrap.style.paddingBottom = h + 'px';
-      return h;
-    }
-  
-    let footerHeight = sizeSpacer();
-  
-    function updateReveal() {
-      const scrollBottom = window.scrollY + window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      const revealAt = docHeight - footerHeight * 0.65;
-      footer.classList.toggle('is-revealed', scrollBottom >= revealAt);
-    }
-  
-    window.addEventListener('scroll', updateReveal, { passive: true });
-  
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        footerHeight = sizeSpacer();
-        updateReveal();
-      }, 150);
-    });
-  
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        footerHeight = sizeSpacer();
-        updateReveal();
-      });
-    }
-  
-    if (prefersReducedMotion) {
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
       footer.classList.add('is-revealed');
+      return;
     }
-  
-    updateReveal();
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            footer.classList.add('is-revealed');
+            obs.unobserve(footer);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+
+    observer.observe(footer);
   })();

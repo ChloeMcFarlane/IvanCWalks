@@ -664,20 +664,35 @@
   }
   
   .gallery-lightbox-close {
-    position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
-    z-index: 2;
-    width: 2.2rem;
-    height: 2.2rem;
+    position: fixed;
+    top: clamp(0.9rem, 2.5vw, 1.6rem);
+    right: clamp(0.9rem, 2.5vw, 1.6rem);
+    z-index: 950;
+    width: 2.4rem;
+    height: 2.4rem;
     border: none;
     border-radius: 50%;
-    background-color: rgba(18, 18, 18, 0.55);
+    background-color: rgba(18, 18, 18, 0.65);
     color: var(--alabaster-grey);
     font-family: var(--font-sans);
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.35s ease, transform 0.35s ease, background-color 0.25s ease;
+  }
+
+  .gallery-lightbox.is-open .gallery-lightbox-close {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .gallery-lightbox-close:hover,
+  .gallery-lightbox-close:focus-visible {
+    background-color: rgba(18, 18, 18, 0.9);
   }
   
   .gallery-lightbox-cta {
@@ -963,27 +978,19 @@
   }
   
   /* ==========================================================================
-     PAGE WRAP — opaque layer above the fixed footer. See the reveal
-     mechanism note on .site-footer below; padding-bottom (set by JS to
-     match the footer's real height) is the scroll "runway" that uncovers it.
+     PAGE WRAP
      ========================================================================== */
   .page-wrap {
     position: relative;
-    z-index: 2;
     background-color: var(--bg-main);
-    background-clip: content-box;
   }
 
 /* ==========================================================================
      FOOTER / CONTACT
      ========================================================================== */
      .site-footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
+      position: relative;
       width: 100%;
-      z-index: 1;
-      overflow: hidden;
       background-color: var(--bg-main);
       padding: clamp(3rem, 8vw, 5.5rem) clamp(1.25rem, 5vw, 3rem);
     }
@@ -993,13 +1000,12 @@
       inset: 0;
       z-index: 0;
       background-color: var(--graphite);
-      transform: scaleY(0);
-      transform-origin: bottom;
-      transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+      opacity: 0;
+      transition: opacity 0.8s ease;
     }
     
     .site-footer.is-revealed .footer-bg {
-      transform: scaleY(1);
+      opacity: 1;
     }
     
     .footer-inner {
@@ -1342,6 +1348,7 @@
     .gallery-lightbox-zoom,
     .gallery-lightbox-backdrop,
     .gallery-lightbox-cta,
+    .gallery-lightbox-close,
     .about-heading,
     .about-statement,
     .about-media,
@@ -1360,6 +1367,12 @@
     .gallery-lightbox-zoom {
       transform: scale(1);
       opacity: 1;
+    }
+
+    .gallery-lightbox.is-open .gallery-lightbox-close {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
     }
   
     .about-heading,
