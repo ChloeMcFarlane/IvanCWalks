@@ -524,6 +524,30 @@
     font-size: clamp(0.5rem, 4.5vw, 2.5rem);
 
   }
+
+  .container {
+    animation: sectionAppear linear both;
+    animation-timeline: view(); /* Not supported on iOS Safari */
+    animation-range: entry 0% cover 35%;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-hero-glow,
+  .gallery-glow,
+  .gallery-glow::after {
+    filter: blur(30px) !important;
+    mix-blend-mode: normal !important;
+    opacity: 0.25 !important;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .container {
+    animation: sectionAppear linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -348,15 +348,15 @@
   
     const GALLERY_IMAGES = [
       'iproj-ASSETS/ivan-gallery15.JPG',
-      'iproj-ASSETS/ivan-gallery1.mp4',
-      'iproj-ASSETS/ivan-gallery3.JPG',
-      'iproj-ASSETS/ivan-gallery4.PNG',
-      'iproj-ASSETS/ivan-gallery6.JPG',
-      'iproj-ASSETS/ivan-gallery8.PNG',
+      'https://res.cloudinary.com/xxhi8hls/video/upload/v1786382656/ivan-gallery1.mp4',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382155/ivan-gallery3.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381958/ivan-gallery6.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381984/ivan-gallery8.png',
       'iproj-ASSETS/ivan-gallery12.jpeg',
       'iproj-ASSETS/ivan-gallery10.jpeg',
-      'iproj-ASSETS/ivan-gallery11.jpeg',
-      'iproj-ASSETS/ivan-gallery13.jpeg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382399/ivan-gallery11.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382430/ivan-gallery13.jpg',
     ];
   
     function shuffle(arr) {
