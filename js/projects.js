@@ -1,8 +1,5 @@
 /* ==========================================================================
    SITE NAV — hamburger toggle + Lenis-powered smooth scroll
-   (same pattern as the homepage's index.js, reused here so this page can
-   ship standalone without pulling in hero/preloader/gallery code that
-   doesn't exist on this page)
    ========================================================================== */
 
    (function () {
@@ -94,7 +91,7 @@
   })();
   
   /* ==========================================================================
-     HERO REVEAL — same blur/slide-in language as the homepage's about section
+     HERO REVEAL — smooth entrance animation
      ========================================================================== */
   
   (function () {
@@ -114,7 +111,7 @@
   })();
   
   /* ==========================================================================
-     PROJECT ROWS — scroll reveal (IntersectionObserver, staggered)
+     PROJECT ROWS — scroll reveal (IntersectionObserver)
      ========================================================================== */
   
   (function () {
@@ -144,7 +141,7 @@
   })();
   
   /* ==========================================================================
-     PROJECT FILTERS — All / Choreography / Acting / Directing
+     PROJECT FILTERS — Category Toggles
      ========================================================================== */
   
   (function () {
@@ -177,10 +174,7 @@
   })();
   
   /* ==========================================================================
-     FLOATING THUMBNAIL — follows the cursor down the project list, swapping
-     media per row. Same idea as a mouse-tracking preview thumbnail, rebuilt
-     with a plain requestAnimationFrame lerp to match this site's own
-     animation idiom (no external animation library required).
+     FLOATING THUMBNAIL — Cursor-following preview with preserved layout math
      ========================================================================== */
   
   (function () {
@@ -214,6 +208,7 @@
       if (!raf) raf = requestAnimationFrame(loop);
     }
   
+    // Restored exact row bounding positioning
     function yFor(row, clientY) {
       const listRect = list.getBoundingClientRect();
       const rowRect = row.getBoundingClientRect();
@@ -253,9 +248,7 @@
   })();
   
   /* ==========================================================================
-     MARQUEE — scroll-linked category strip (same ratio-based technique as
-     the homepage merch marquee: transform tracks real scroll position, it
-     doesn't run on its own timer)
+     MARQUEE — Scroll-linked category strip
      ========================================================================== */
   
   (function () {
@@ -293,8 +286,7 @@
   })();
   
   /* ==========================================================================
-     SCROLL CUE — small ascii glyph that cycles based on scroll velocity,
-     homage to a frame-cycling spinner tied to scroll speed rather than time.
+     SCROLL CUE — ASCII Glyph cycle on scroll
      ========================================================================== */
   
   (function () {
@@ -323,9 +315,7 @@
   })();
   
   /* ==========================================================================
-     FOOTER — pinned reveal (identical mechanism to the homepage's footer;
-     see index.js for the full rationale on why this uses real scroll
-     position rather than IntersectionObserver)
+     FOOTER — Pinned reveal calculation
      ========================================================================== */
   
   (function () {
