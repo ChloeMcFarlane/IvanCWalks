@@ -67,7 +67,7 @@
         const elapsed = now - start;
         const t = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - t, 3);
-        
+  
         if (!imagesReady) {
           targetProgress = eased * 92;
         }
@@ -87,14 +87,20 @@
       targetProgress = 100;
     }
   
+    // Waits on every hero-carousel media element — both <img> and <video> —
+    // before letting the preloader finish. Images settle on load/error;
+    // videos settle on canplay/error (readyState >= 3 means enough is
+    // buffered to play without stalling).
     function watchImages() {
       const imgs = carouselTrack ? Array.from(carouselTrack.querySelectorAll('img')) : [];
-      if (imgs.length === 0) {
+      const videos = carouselTrack ? Array.from(carouselTrack.querySelectorAll('video')) : [];
+  
+      if (imgs.length === 0 && videos.length === 0) {
         onImagesReady();
         return;
       }
   
-      let remaining = imgs.length;
+      let remaining = imgs.length + videos.length;
       function settle() {
         remaining -= 1;
         if (remaining <= 0) onImagesReady();
@@ -109,7 +115,16 @@
         }
       });
   
-      // Fallback safety timeout (reduced from 6s to 3s for better user experience)
+      videos.forEach((video) => {
+        if (video.readyState >= 3) {
+          settle();
+        } else {
+          video.addEventListener('canplay', settle, { once: true });
+          video.addEventListener('error', settle, { once: true });
+        }
+      });
+  
+      // Fallback safety timeout so a slow/broken asset can't hang the preloader forever.
       setTimeout(onImagesReady, 3000);
     }
   
@@ -124,7 +139,7 @@
   })();
   
   /* ==========================================================================
-     HERO CAROUSEL — seamless image scroller
+     HERO CAROUSEL — seamless image/video scroller
      ========================================================================== */
   
   (function () {
@@ -180,7 +195,7 @@
   
     if (prevBtn) prevBtn.addEventListener('click', () => { prev(); restartAutoplay(); });
     if (nextBtn) nextBtn.addEventListener('click', () => { next(); restartAutoplay(); });
-    
+  
     dots.forEach((dot, i) => {
       dot.addEventListener('click', () => { goTo(i); restartAutoplay(); });
     });
@@ -193,7 +208,7 @@
     carousel.setAttribute('tabindex', '0');
     carousel.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') { next(); restartAutoplay(); }
-      if (e.key === 'ArrowLeft')  { prev(); restartAutoplay(); }
+      if (e.key === 'ArrowLeft') { prev(); restartAutoplay(); }
     });
   
     let dragStartX = null;
@@ -379,7 +394,7 @@
   })();
   
   /* ==========================================================================
-     GALLERY LIGHTBOX 
+     GALLERY LIGHTBOX
      ========================================================================== */
   
   (function () {
@@ -506,7 +521,7 @@
   })();
   
   /* ==========================================================================
-     ABOUT
+     ABOUT — scroll reveal
      ========================================================================== */
   
   (function () {
@@ -536,7 +551,7 @@
   })();
   
   /* ==========================================================================
-     MERCH MARQUEE
+     MERCH — product image reveal + scroll-linked marquee
      ========================================================================== */
   
   (function () {
@@ -597,20 +612,20 @@
   })();
   
   /* ==========================================================================
-     FOOTER
+     FOOTER — pinned reveal
      ========================================================================== */
   
   (function () {
     const footer = document.getElementById('contact');
     if (!footer || !footer.classList.contains('site-footer')) return;
-
+  
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+  
     if (prefersReducedMotion || !('IntersectionObserver' in window)) {
       footer.classList.add('is-revealed');
       return;
     }
-
+  
     const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((entry) => {
@@ -622,6 +637,6 @@
       },
       { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
     );
-
+  
     observer.observe(footer);
   })();
