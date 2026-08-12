@@ -22,6 +22,19 @@
     </head>
     <body>
 
+        <!-- ===================== EVENT BANNER ===================== -->
+        <div class="event-banner" id="eventBanner" role="region" aria-label="Upcoming event">
+            <div class="event-banner-inner">
+                <span class="event-banner-text">
+                    <strong>Live at The Wiltern</strong> — Sept 14, 2026
+                </span>
+                <a class="event-banner-link" href="#" target="_blank" rel="noopener noreferrer">
+                    Buy tickets <span class="event-banner-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <button class="event-banner-close" id="eventBannerClose" type="button" aria-label="Dismiss announcement">&times;</button>
+            </div>
+        </div>
+
         <!-- ===================== NAV ===================== -->
         <nav class="site-nav" id="siteNav">
             <div class="site-nav-inner">
@@ -71,18 +84,24 @@
                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad quo minima voluptatum beatae dicta laborum officia officiis voluptas, voluptate reiciendis recusandae perferendis, ab nesciunt iusto! Neque ipsam eius reiciendis? Eveniet.
                     </p>
 
-                    <div class="projects-filters" role="group" aria-label="Filter projects by discipline">
+                    <div class="projects-filters" role="group" aria-label="Filter projects by team member">
                         <button class="projects-filter is-active" type="button" data-filter="all">
                             <span class="projects-filter-dot" aria-hidden="true"></span>All
                         </button>
-                        <button class="projects-filter" type="button" data-filter="choreography">
-                            <span class="projects-filter-dot" aria-hidden="true"></span>Choreography
+                        <button class="projects-filter" type="button" data-filter="team-1">
+                            <span class="projects-filter-dot" aria-hidden="true"></span>Team Member 1
                         </button>
-                        <button class="projects-filter" type="button" data-filter="acting">
-                            <span class="projects-filter-dot" aria-hidden="true"></span>Acting
+                        <button class="projects-filter" type="button" data-filter="team-2">
+                            <span class="projects-filter-dot" aria-hidden="true"></span>Team Member 2
                         </button>
-                        <button class="projects-filter" type="button" data-filter="directing">
-                            <span class="projects-filter-dot" aria-hidden="true"></span>Lyricism
+                        <button class="projects-filter" type="button" data-filter="team-3">
+                            <span class="projects-filter-dot" aria-hidden="true"></span>Team Member 3
+                        </button>
+                        <button class="projects-filter" type="button" data-filter="team-4">
+                            <span class="projects-filter-dot" aria-hidden="true"></span>Team Member 4
+                        </button>
+                        <button class="projects-filter" type="button" data-filter="team-5">
+                            <span class="projects-filter-dot" aria-hidden="true"></span>Team Member 5
                         </button>
                     </div>
                 </div>
@@ -104,13 +123,13 @@
 
                 <span class="projects-count" id="projectsCount" style="display:none;">06 Projects</span>
 
-                <div class="project-row" data-category="choreography" data-thumb="iproj-ASSETS/ivan-gallery15.JPG">
+                <div class="project-row" data-category="team-1" data-thumb="iproj-ASSETS/ivan-gallery15.JPG">
                     <a class="project-link" href="#">
                         <span class="project-index">01</span>
                         <span class="project-main">
                             <span class="project-title">PROJECT 1</span>
                             <span class="project-meta">
-                                <span class="project-tag project-tag--cat">Choreography</span>
+                                <span class="project-tag project-tag--cat">Team Member 1</span>
                                 <span class="project-tag">2025</span>
                                 <span class="project-tag">Lead Choreographer / Dancer</span>
                             </span>
@@ -122,13 +141,13 @@
                     </a>
                 </div>
 
-                <div class="project-row" data-category="acting" data-thumb="iproj-ASSETS/iproj-slide-3.jpg">
+                <div class="project-row" data-category="team-2" data-thumb="iproj-ASSETS/iproj-slide-3.jpg">
                     <a class="project-link" href="#">
                         <span class="project-index">02</span>
                         <span class="project-main">
                             <span class="project-title">PROJECT 2</span>
                             <span class="project-meta">
-                                <span class="project-tag project-tag--cat">Acting</span>
+                                <span class="project-tag project-tag--cat">Team Member 2</span>
                                 <span class="project-tag">2025</span>
                                 <span class="project-tag">Lead Role, Short Film</span>
                             </span>
@@ -140,13 +159,13 @@
                     </a>
                 </div>
 
-                <div class="project-row" data-category="directing" data-thumb="iproj-ASSETS/ivan-gallery4.PNG">
+                <div class="project-row" data-category="team-3" data-thumb="iproj-ASSETS/ivan-gallery4.PNG">
                     <a class="project-link" href="#">
                         <span class="project-index">03</span>
                         <span class="project-main">
                             <span class="project-title">Project 3</span>
                             <span class="project-meta">
-                                <span class="project-tag project-tag--cat">Lyricism</span>
+                                <span class="project-tag project-tag--cat">Team Member 3</span>
                                 <span class="project-tag">2025</span>
                                 <span class="project-tag">Lyricist</span>
                             </span>
@@ -158,13 +177,13 @@
                     </a>
                 </div>
 
-                <div class="project-row" data-category="choreography" data-thumb="iproj-ASSETS/">
+                <div class="project-row" data-category="team-4" data-thumb="iproj-ASSETS/">
                     <a class="project-link" href="#">
                         <span class="project-index">04</span>
                         <span class="project-main">
                             <span class="project-title">Project 4</span>
                             <span class="project-meta">
-                                <span class="project-tag project-tag--cat">Choreography</span>
+                                <span class="project-tag project-tag--cat">Team Member 4</span>
                                 <span class="project-tag">2024</span>
                                 <span class="project-tag">Movement Direction, Music Video</span>
                             </span>
@@ -176,13 +195,13 @@
                     </a>
                 </div>
 
-                <div class="project-row" data-category="acting" data-thumb="iproj-ASSETS/ivan-gallery12.jpeg">
+                <div class="project-row" data-category="team-5" data-thumb="iproj-ASSETS/ivan-gallery12.jpeg">
                     <a class="project-link" href="#">
                         <span class="project-index">05</span>
                         <span class="project-main">
                             <span class="project-title">Project 5</span>
                             <span class="project-meta">
-                                <span class="project-tag project-tag--cat">Acting</span>
+                                <span class="project-tag project-tag--cat">Team Member 5</span>
                                 <span class="project-tag">2024</span>
                                 <span class="project-tag">Supporting Role, Stage</span>
                             </span>
@@ -212,13 +231,9 @@
                     <span class="projects-marquee-dot"></span>
                     <span class="projects-marquee-word projects-marquee-word--directing">Directing</span>
                     <span class="projects-marquee-dot"></span>
-                </div>
-                <div class="projects-marquee-item">
-                    <span class="projects-marquee-word projects-marquee-word--choreography">Choreography</span>
+                    <span class="projects-marquee-word projects-marquee-word--movement">Movement</span>
                     <span class="projects-marquee-dot"></span>
-                    <span class="projects-marquee-word projects-marquee-word--acting">Acting</span>
-                    <span class="projects-marquee-dot"></span>
-                    <span class="projects-marquee-word projects-marquee-word--directing">Directing</span>
+                    <span class="projects-marquee-word projects-marquee-word--production">Production</span>
                     <span class="projects-marquee-dot"></span>
                 </div>
                 <div class="projects-marquee-item">
@@ -228,6 +243,10 @@
                     <span class="projects-marquee-dot"></span>
                     <span class="projects-marquee-word projects-marquee-word--directing">Directing</span>
                     <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--movement">Movement</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--production">Production</span>
+                    <span class="projects-marquee-dot"></span>
                 </div>
                 <div class="projects-marquee-item">
                     <span class="projects-marquee-word projects-marquee-word--choreography">Choreography</span>
@@ -235,6 +254,22 @@
                     <span class="projects-marquee-word projects-marquee-word--acting">Acting</span>
                     <span class="projects-marquee-dot"></span>
                     <span class="projects-marquee-word projects-marquee-word--directing">Directing</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--movement">Movement</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--production">Production</span>
+                    <span class="projects-marquee-dot"></span>
+                </div>
+                <div class="projects-marquee-item">
+                    <span class="projects-marquee-word projects-marquee-word--choreography">Choreography</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--acting">Acting</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--directing">Directing</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--movement">Movement</span>
+                    <span class="projects-marquee-dot"></span>
+                    <span class="projects-marquee-word projects-marquee-word--production">Production</span>
                     <span class="projects-marquee-dot"></span>
                 </div>
             </div>

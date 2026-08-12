@@ -640,3 +640,65 @@
   
     observer.observe(footer);
   })();
+
+/* ==========================================================================
+   EVENT BANNER — slides down above the nav; nav's own "top" offset (a CSS
+   var) shifts to sit right underneath it. Dismissal is remembered for the
+   browser session (not permanently) so a closed banner doesn't reappear on
+   every page nav within the same visit, but does come back on a fresh one.
+   ========================================================================== */
+
+(function () {
+  const STORAGE_KEY = 'eventBannerDismissed';
+  const banner = document.getElementById('eventBanner');
+  const closeBtn = document.getElementById('eventBannerClose');
+  if (!banner || !closeBtn) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let dismissed = false;
+  try {
+    dismissed = sessionStorage.getItem(STORAGE_KEY) === '1';
+  } catch (e) {
+    // Storage can throw in some privacy modes — just fall through and
+    // show the banner rather than breaking the page over it.
+  }
+
+  if (dismissed) {
+    banner.remove();
+    return;
+  }
+
+  function setOffset(px) {
+    document.documentElement.style.setProperty('--event-banner-offset', px + 'px');
+  }
+
+  function show() {
+    setOffset(banner.offsetHeight);
+    requestAnimationFrame(() => banner.classList.add('is-visible'));
+  }
+
+  function dismiss() {
+    banner.classList.remove('is-visible');
+    setOffset(0);
+    try {
+      sessionStorage.setItem(STORAGE_KEY, '1');
+    } catch (e) {
+      // Ignore — worst case it reappears next page load, not a big deal.
+    }
+    setTimeout(() => banner.remove(), prefersReducedMotion ? 0 : 750);
+  }
+
+  closeBtn.addEventListener('click', dismiss);
+
+  window.addEventListener('resize', () => {
+    if (banner.classList.contains('is-visible')) setOffset(banner.offsetHeight);
+  });
+
+  if (prefersReducedMotion) {
+    setOffset(banner.offsetHeight);
+    banner.classList.add('is-visible');
+  } else {
+    setTimeout(show, 600);
+  }
+})();

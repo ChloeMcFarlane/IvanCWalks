@@ -30,6 +30,29 @@
     --pink-orchid:     #D7A6C3ff;
     --magenta:         #FF03F9ff;
     --cornflower-blue: #6591D3ff;
+
+    /* New colorway request — several of these (mauve-bark, charcoal-blue,
+       faded-copper) are mid-to-dark tones that would barely register as a
+       glow against a pure black (--onyx) background using screen blend
+       mode alone, since screen-blending a dark color over black is close
+       to a no-op. The "-glow" variants below are the same colors mixed
+       toward white specifically for use in the glow gradient, so the glow
+       stays visibly present without changing the raw brand colors
+       themselves (those stay true to the hex given, for use anywhere else
+       they're needed at full saturation). */
+    --pale-sky:      #A8C7DCff;
+    --faded-copper:  #9A7061ff;
+    --mauve-bark:    #694D48ff;
+    --charcoal-blue: #3D4550ff;
+    --dust-grey:     #DBD9D9ff;
+
+    --pale-sky-glow:      color-mix(in srgb, var(--pale-sky) 90%, white 10%);
+    --faded-copper-glow:  color-mix(in srgb, var(--faded-copper) 74%, white 26%);
+    --mauve-bark-glow:    color-mix(in srgb, var(--mauve-bark) 62%, white 38%);
+    --charcoal-blue-glow: color-mix(in srgb, var(--charcoal-blue) 58%, white 42%);
+    --dust-grey-glow:     var(--dust-grey);
+
+    --event-banner-offset: 0px;
   
     --primary-accent: var(--dim-grey);
     --bg-main:        var(--onyx);
@@ -274,14 +297,115 @@
   /* ==========================================================================
      SITE NAV
      ========================================================================== */
-  .site-nav {
+  /* ==========================================================================
+     EVENT BANNER — slim announcement bar, drops down above the nav.
+     Deliberately restrained: monochrome (alabaster on black text, no accent
+     colors), single line where possible, ~2.75rem tall so it never seriously
+     eats into the hero. Sits above the nav (higher z-index) and the nav's
+     own "top" offset shifts down to sit right underneath it — see
+     --event-banner-offset, set by JS to this element's real height.
+     ========================================================================== */
+  .event-banner {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 600;
+    background-color: var(--alabaster-grey);
+    color: var(--onyx);
+    transform: translateY(-100%);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  .event-banner.is-visible {
+    transform: translateY(0);
+  }
+
+  .event-banner-inner {
+    position: relative;
+    max-width: 90rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 0.65rem clamp(2.75rem, 6vw, 3.5rem);
+    text-align: center;
+  }
+
+  .event-banner-text {
+    font-family: var(--font-sans);
+    font-size: clamp(0.72rem, 1.4vw, 0.85rem);
+    letter-spacing: 0.01em;
+  }
+
+  .event-banner-text strong {
+    font-family: var(--font-bold);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .event-banner-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: clamp(0.68rem, 1.2vw, 0.78rem);
+    font-weight: 700;
+    color: var(--onyx);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    transition: gap 0.3s ease, opacity 0.3s ease;
+  }
+
+  .event-banner-link:hover,
+  .event-banner-link:focus-visible {
+    gap: 0.55rem;
+    opacity: 0.65;
+  }
+
+  .event-banner-link-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .event-banner-close {
+    position: absolute;
+    right: clamp(0.5rem, 2vw, 1rem);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--onyx);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.3s ease;
+  }
+
+  .event-banner-close:hover,
+  .event-banner-close:focus-visible {
+    opacity: 1;
+  }
+
+  .site-nav {
+    position: fixed;
+    top: var(--event-banner-offset, 0px);
+    left: 0;
+    width: 100%;
     z-index: 500;
     padding: clamp(1rem, 3vw, 1.75rem) clamp(1rem, 4vw, 2.5rem);
-    transition: padding 0.5s ease;
+    transition: padding 0.5s ease, top 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   .site-nav::after {
@@ -496,37 +620,19 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
-    background:
-      linear-gradient(
-        155deg,
-        transparent 0%,
-        var(--cornflower-blue) 16%,
-        var(--magenta) 34%,
-        var(--pink-orchid) 50%,
-        var(--sunflower-gold) 66%,
-        var(--amber-glow) 82%,
-        transparent 100%
-      );
-    background-size: 100% 100%;
-    filter: blur(150px) saturate(115%);
-    opacity: 0.6;
-    mix-blend-mode: screen;
-  }
-  
-  .gallery-glow::after {
-    content: "";
-    position: absolute;
-    inset: 0;
+    /* Same gradient recipe as .projects-hero-glow on the projects page —
+       kept identical so the two pages read as one consistent colorway. */
     background: linear-gradient(
-      205deg,
+      160deg,
       transparent 0%,
-      var(--amber-glow) 20%,
-      var(--pink-orchid) 45%,
-      var(--cornflower-blue) 70%,
-      transparent 92%
+      var(--pale-sky-glow) 18%,
+      var(--charcoal-blue-glow) 38%,
+      var(--faded-copper-glow) 58%,
+      var(--mauve-bark-glow) 78%,
+      transparent 100%
     );
-    filter: blur(170px);
-    opacity: 0.4;
+    filter: blur(150px) saturate(130%);
+    opacity: 0.55;
     mix-blend-mode: screen;
   }
   
@@ -736,10 +842,6 @@
   }
   
   .about-inner {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: center;
-    gap: clamp(2.5rem, 6vw, 5rem);
     max-width: 90rem;
     margin: 0 auto;
   }
@@ -748,8 +850,14 @@
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
+    max-width: 44rem;
+    margin-bottom: clamp(3rem, 7vw, 5rem);
   }
   
+  /* Reveal direction: was translateX (in from the right) — client asked
+     for this to "come up" instead, so it's translateY now. The blur/opacity
+     "settle into focus" treatment is kept, since that was the part they
+     specifically wanted to hang on to. */
   .about-heading {
     font-family: var(--font-bold);
     color: var(--alabaster-grey);
@@ -758,12 +866,12 @@
     font-size: clamp(2rem, 5vw, 3.75rem);
     line-height: 1.05;
     opacity: 0;
-    transform: translateX(240px) scale(1.1);
+    transform: translateY(70px) scale(1.04);
     filter: blur(20px);
     transition:
-      transform 1.3s cubic-bezier(0.7, 0, 0.84, 0),
-      filter 1.1s ease-out,
-      opacity 0.9s ease-out;
+      transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 1s ease-out,
+      opacity 0.8s ease-out;
   }
   
   .about-statement {
@@ -773,43 +881,93 @@
     line-height: 1.75;
     max-width: 34rem;
     opacity: 0;
-    transform: translateX(240px) scale(1.06);
+    transform: translateY(50px);
     filter: blur(16px);
     transition:
-      transform 1.3s cubic-bezier(0.7, 0, 0.84, 0) 0.75s,
-      filter 1.1s ease-out 0.75s,
-      opacity 0.9s ease-out 0.75s;
+      transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+      filter 0.9s ease-out 0.2s,
+      opacity 0.7s ease-out 0.2s;
   }
   
   .about.is-revealed .about-heading,
   .about.is-revealed .about-statement {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(0) scale(1);
     filter: blur(0);
   }
   
-  .about-media {
+  /* ---- Meet the Team grid ---- */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  
+  .team-member {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(12px);
+    transition:
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.8s ease-out,
+      opacity 0.7s ease-out;
+  }
+  
+  .about.is-revealed .team-member {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  
+  /* Staggered per card, same "settle in one after another" idea the old
+     translateX version had via its own transition-delays. */
+  .about.is-revealed .team-member:nth-child(1) { transition-delay: 0.35s; }
+  .about.is-revealed .team-member:nth-child(2) { transition-delay: 0.43s; }
+  .about.is-revealed .team-member:nth-child(3) { transition-delay: 0.51s; }
+  .about.is-revealed .team-member:nth-child(4) { transition-delay: 0.59s; }
+  .about.is-revealed .team-member:nth-child(5) { transition-delay: 0.67s; }
+  
+  .team-member-photo {
     position: relative;
     width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background-color: var(--graphite);
-    opacity: 0;
-    transform: translateX(280px);
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.6s, opacity 1s ease-out 1.6s;
   }
   
-  .about.is-revealed .about-media {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  
-  .about-image {
+  .team-member-image {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
+    filter: grayscale(1);
+    transition: filter 0.5s ease, transform 0.6s ease;
+  }
+  
+  .team-member:hover .team-member-image {
+    filter: grayscale(0);
+    transform: scale(1.04);
+  }
+  
+  .team-member-name {
+    font-family: var(--font-bold);
+    color: var(--alabaster-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    line-height: 1.2;
+  }
+  
+  .team-member-title {
+    font-family: var(--font-sans);
+    font-style: italic;
+    color: var(--grey-olive);
+    font-size: clamp(0.78rem, 1vw, 0.9rem);
+    line-height: 1.3;
   }
   
   /* ==========================================================================
@@ -1176,9 +1334,9 @@
     .gallery-glow {
       filter: blur(110px) saturate(115%);
     }
-  
-    .gallery-glow::after {
-      filter: blur(120px);
+
+    .team-grid {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
   
@@ -1242,13 +1400,8 @@
       font-size: clamp(0.75rem, 2vw, 0.95rem);
     }
   
-    .about-inner {
-      grid-template-columns: 1fr;
-    }
-  
-    .about-media {
-      aspect-ratio: 16 / 10;
-      order: -1;
+    .team-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   
     .footer-inner {
@@ -1276,11 +1429,6 @@
     .gallery-glow {
       opacity: 0.5;
       filter: blur(70px) saturate(115%);
-    }
-  
-    .gallery-glow::after {
-      opacity: 0.32;
-      filter: blur(85px);
     }
   }
   
@@ -1342,6 +1490,7 @@
     .site-nav,
     .site-nav::after,
     .nav-logo,
+    .event-banner,
     .gallery-media,
     .gallery-lightbox-zoom,
     .gallery-lightbox-backdrop,
@@ -1349,7 +1498,8 @@
     .gallery-lightbox-close,
     .about-heading,
     .about-statement,
-    .about-media,
+    .team-member,
+    .team-member-image,
     .merch-product-image,
     .merch-product::before,
     .merch-shop-btn::before,
@@ -1375,7 +1525,7 @@
   
     .about-heading,
     .about-statement,
-    .about-media {
+    .team-member {
       opacity: 1;
       transform: none;
       filter: blur(0);

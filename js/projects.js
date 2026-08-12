@@ -315,53 +315,95 @@
   })();
   
   /* ==========================================================================
-     FOOTER — Pinned reveal calculation
+     FOOTER — scroll-reveal, matching the (now static, non-fixed) footer
+     styling in the shared styles.css. This used to size a page-wrap
+     spacer for a pinned/fixed footer, but that mechanism was replaced
+     site-wide with a simpler static-footer + reveal-on-scroll approach —
+     this brings the page in line with that so there's no leftover blank
+     gap at the bottom from a spacer nothing is using anymore.
      ========================================================================== */
-  
+
   (function () {
     const footer = document.getElementById('contact');
-    const pageWrap = document.getElementById('pageWrap');
-    if (!footer || !footer.classList.contains('site-footer') || !pageWrap) return;
-  
+    if (!footer || !footer.classList.contains('site-footer')) return;
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-    function sizeSpacer() {
-      pageWrap.style.paddingBottom = '0px';
-      const h = footer.offsetHeight;
-      pageWrap.style.paddingBottom = h + 'px';
-      return h;
-    }
-  
-    let footerHeight = sizeSpacer();
-  
-    function updateReveal() {
-      const scrollBottom = window.scrollY + window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      const revealAt = docHeight - footerHeight * 0.65;
-      footer.classList.toggle('is-revealed', scrollBottom >= revealAt);
-    }
-  
-    window.addEventListener('scroll', updateReveal, { passive: true });
-  
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        footerHeight = sizeSpacer();
-        updateReveal();
-      }, 150);
-    });
-  
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        footerHeight = sizeSpacer();
-        updateReveal();
-      });
-    }
-  
-    if (prefersReducedMotion) {
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
       footer.classList.add('is-revealed');
+      return;
     }
-  
-    updateReveal();
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            footer.classList.add('is-revealed');
+            obs.unobserve(footer);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+
+    observer.observe(footer);
   })();
+
+/* ==========================================================================
+   EVENT BANNER — same behavior as the homepage's copy of this module.
+   ========================================================================== */
+
+(function () {
+  const STORAGE_KEY = 'eventBannerDismissed';
+  const banner = document.getElementById('eventBanner');
+  const closeBtn = document.getElementById('eventBannerClose');
+  if (!banner || !closeBtn) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let dismissed = false;
+  try {
+    dismissed = sessionStorage.getItem(STORAGE_KEY) === '1';
+  } catch (e) {
+    // Storage can throw in some privacy modes — just fall through and
+    // show the banner rather than breaking the page over it.
+  }
+
+  if (dismissed) {
+    banner.remove();
+    return;
+  }
+
+  function setOffset(px) {
+    document.documentElement.style.setProperty('--event-banner-offset', px + 'px');
+  }
+
+  function show() {
+    setOffset(banner.offsetHeight);
+    requestAnimationFrame(() => banner.classList.add('is-visible'));
+  }
+
+  function dismiss() {
+    banner.classList.remove('is-visible');
+    setOffset(0);
+    try {
+      sessionStorage.setItem(STORAGE_KEY, '1');
+    } catch (e) {
+      // Ignore — worst case it reappears next page load, not a big deal.
+    }
+    setTimeout(() => banner.remove(), prefersReducedMotion ? 0 : 750);
+  }
+
+  closeBtn.addEventListener('click', dismiss);
+
+  window.addEventListener('resize', () => {
+    if (banner.classList.contains('is-visible')) setOffset(banner.offsetHeight);
+  });
+
+  if (prefersReducedMotion) {
+    setOffset(banner.offsetHeight);
+    banner.classList.add('is-visible');
+  } else {
+    setTimeout(show, 600);
+  }
+})();

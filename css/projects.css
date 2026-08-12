@@ -6,11 +6,13 @@
    plus the accent (--font-accent) and decaying (--font-decaying) type faces.
    ========================================================================== */
 
-/* ---- category accent colors, mapped onto the existing palette ---- */
+/* ---- team member accent colors, mapped onto the existing palette ---- */
 :root {
-  --cat-choreography: var(--magenta);
-  --cat-acting:       var(--cornflower-blue);
-  --cat-directing:    var(--sunflower-gold);
+  --cat-team-1: color-mix(in srgb, var(--pale-sky) 70%, black 30%);
+  --cat-team-2: var(--faded-copper);
+  --cat-team-3: rgb(74, 108, 158);
+  --cat-team-4: rgb(223, 116, 221);
+  --cat-team-5: var(--amber-glow);
 }
 
 /* ==========================================================================
@@ -28,9 +30,19 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(160deg, transparent 0%, var(--cornflower-blue) 20%, var(--magenta) 42%, var(--sunflower-gold) 68%, transparent 100%);
-  filter: blur(160px) saturate(110%);
-  opacity: 0.35;
+  /* Matches the homepage gallery-glow colorway — pale-sky/charcoal-blue
+     for the blues, faded-copper/mauve-bark for the browns. */
+  background: linear-gradient(
+    160deg,
+    transparent 0%,
+    var(--pale-sky-glow) 18%,
+    var(--charcoal-blue-glow) 68%,
+    var(--faded-copper-glow) 88%,
+    var(--mauve-bark-glow) 78%,
+    transparent 100%
+  );
+  filter: blur(150px) saturate(130%);
+  opacity: 0.55;
   mix-blend-mode: screen;
 }
 
@@ -158,10 +170,12 @@
   opacity: 1;
 }
 
-.projects-filter[data-filter="choreography"] { color: var(--cat-choreography); }
-.projects-filter[data-filter="acting"]       { color: var(--cat-acting); }
-.projects-filter[data-filter="directing"]    { color: var(--cat-directing); }
-.projects-filter[data-filter="all"]          { color: var(--silver); }
+.projects-filter[data-filter="team-1"] { color: var(--cat-team-1); }
+.projects-filter[data-filter="team-2"] { color: var(--cat-team-2); }
+.projects-filter[data-filter="team-3"] { color: var(--cat-team-3); }
+.projects-filter[data-filter="team-4"] { color: var(--cat-team-4); }
+.projects-filter[data-filter="team-5"] { color: var(--cat-team-5); }
+.projects-filter[data-filter="all"]    { color: var(--silver); }
 .projects-filter.is-active[data-filter]      { color: var(--onyx); }
 
 /* ---- ascii scroll cue, homage to a tiny frame-cycling spinner ---- */
@@ -287,12 +301,16 @@
   background-color: var(--tag-color, var(--grey-olive));
 }
 
-.project-row[data-category="choreography"] .project-tag--cat { color: var(--cat-choreography); }
-.project-row[data-category="acting"]       .project-tag--cat { color: var(--cat-acting); }
-.project-row[data-category="directing"]    .project-tag--cat { color: var(--cat-directing); }
-.project-row[data-category="choreography"] .project-tag--cat::before { background-color: var(--cat-choreography); }
-.project-row[data-category="acting"]       .project-tag--cat::before { background-color: var(--cat-acting); }
-.project-row[data-category="directing"]    .project-tag--cat::before { background-color: var(--cat-directing); }
+.project-row[data-category="team-1"] .project-tag--cat { color: var(--cat-team-1); }
+.project-row[data-category="team-2"] .project-tag--cat { color: var(--cat-team-2); }
+.project-row[data-category="team-3"] .project-tag--cat { color: var(--cat-team-3); }
+.project-row[data-category="team-4"] .project-tag--cat { color: var(--cat-team-4); }
+.project-row[data-category="team-5"] .project-tag--cat { color: var(--cat-team-5); }
+.project-row[data-category="team-1"] .project-tag--cat::before { background-color: var(--cat-team-1); }
+.project-row[data-category="team-2"] .project-tag--cat::before { background-color: var(--cat-team-2); }
+.project-row[data-category="team-3"] .project-tag--cat::before { background-color: var(--cat-team-3); }
+.project-row[data-category="team-4"] .project-tag--cat::before { background-color: var(--cat-team-4); }
+.project-row[data-category="team-5"] .project-tag--cat::before { background-color: var(--cat-team-5); }
 
 .project-blurb {
   font-family: var(--font-sans);
@@ -410,9 +428,11 @@
   line-height: 1;
 }
 
-.projects-marquee-word--choreography { color: var(--cat-choreography); }
-.projects-marquee-word--acting       { color: var(--cat-acting); }
-.projects-marquee-word--directing    { color: var(--cat-directing); }
+.projects-marquee-word--choreography { color: var(--cat-team-1); }
+.projects-marquee-word--acting       { color: var(--cat-team-2); }
+.projects-marquee-word--directing    { color: var(--cat-team-3); }
+.projects-marquee-word--movement     { color: var(--cat-team-4); }
+.projects-marquee-word--production   { color: var(--cat-team-5); }
 
 .projects-marquee-dot {
   width: 8px;
@@ -534,8 +554,7 @@
 
 @media (max-width: 768px) {
   .projects-hero-glow,
-  .gallery-glow,
-  .gallery-glow::after {
+  .gallery-glow {
     filter: blur(30px) !important;
     mix-blend-mode: normal !important;
     opacity: 0.25 !important;

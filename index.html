@@ -15,6 +15,19 @@
     </head>
     <body>
 
+        <!-- ===================== EVENT BANNER ===================== -->
+        <div class="event-banner" id="eventBanner" role="region" aria-label="Upcoming event">
+            <div class="event-banner-inner">
+                <span class="event-banner-text">
+                    <strong>Live at Barclays Center</strong> — Sept 14, 2026
+                </span>
+                <a class="event-banner-link" href="#" target="_blank" rel="noopener noreferrer">
+                    Buy tickets <span class="event-banner-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <button class="event-banner-close" id="eventBannerClose" type="button" aria-label="Dismiss announcement">&times;</button>
+            </div>
+        </div>
+
         <!-- ===================== PRELOADER ===================== -->
         <div class="preloader" id="preloader" role="status" aria-live="polite">
             <div class="preloader-inner">
@@ -127,23 +140,61 @@
             </div>
         </div>
 
-        <!-- ===================== ABOUT ===================== -->
+        <!-- ===================== ABOUT / MEET THE TEAM ===================== -->
         <section class="about" id="about">
             <div class="about-inner">
                 <div class="about-copy">
-                    <h2 class="about-heading">Who is Ivan Cecil Walks</h2>
+                    <h2 class="about-heading">Meet the Team</h2>
                     <p class="about-statement">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                        mollit anim id est laborum.
+                        tempor incididunt ut labore et dolore magna aliqua, the people behind
+                        every piece, every set, every room.
                     </p>
                 </div>
-                <div class="about-media">
-                    <img class="about-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786382399/ivan-gallery11.jpg" alt="Portrait of Ivan Cecil Walks">
+
+                <!-- Replace names, titles, and photos with the real team.
+                     Grid is fixed at 5 columns on desktop, 3 on tablet, 2 on
+                     mobile (see the responsive section in styles.css). -->
+                <div class="team-grid" id="teamGrid">
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="iproj-ASSETS/team-1.jpg" alt="">
+                        </div>
+                        <p class="team-member-name">Team Member One</p>
+                        <p class="team-member-title">Creative Director</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="iproj-ASSETS/team-2.jpg" alt="">
+                        </div>
+                        <p class="team-member-name">Team Member Two</p>
+                        <p class="team-member-title">Choreographer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="iproj-ASSETS/team-3.jpg" alt="">
+                        </div>
+                        <p class="team-member-name">Team Member Three</p>
+                        <p class="team-member-title">Producer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="iproj-ASSETS/team-4.jpg" alt="">
+                        </div>
+                        <p class="team-member-name">Team Member Four</p>
+                        <p class="team-member-title">Stylist</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="iproj-ASSETS/team-5.jpg" alt="">
+                        </div>
+                        <p class="team-member-name">Team Member Five</p>
+                        <p class="team-member-title">Photographer</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -168,7 +219,7 @@
                     <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786381918/brown-ivan-tee.png" alt="Merch item 1">
                 </div>
                 <div class="merch-product">
-                    <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786381922/black-ivan-tee.png" alt="Merch item 3">
+                    <img class="merch-product-image" src="iproj-ASSETS/black-ivan-tee.png" alt="Merch item 3">
                 </div>
                 <div class="merch-product">
                     <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786381914/blue-ivan-tee.png" alt="Merch item 2">
