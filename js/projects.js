@@ -174,7 +174,7 @@
   })();
   
   /* ==========================================================================
-     FLOATING THUMBNAIL — Cursor-following preview with preserved layout math
+     FLOATING THUMBNAIL — Desktop hover-triggered preview
      ========================================================================== */
   
   (function () {
@@ -182,9 +182,11 @@
     const thumb = document.getElementById('projectsFloatingThumb');
     if (!list || !thumb) return;
   
+    // Prevent initialisation on mobile devices, small screens, or reduced motion settings
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    if (prefersReducedMotion || isCoarsePointer) return;
+    const isNarrowViewport = window.matchMedia('(max-width: 900px)').matches;
+    if (prefersReducedMotion || isCoarsePointer || isNarrowViewport) return;
   
     const media = thumb.querySelector('img');
     const rows = Array.from(document.querySelectorAll('.project-row'));
@@ -208,7 +210,6 @@
       if (!raf) raf = requestAnimationFrame(loop);
     }
   
-    // Restored exact row bounding positioning
     function yFor(row, clientY) {
       const listRect = list.getBoundingClientRect();
       const rowRect = row.getBoundingClientRect();
@@ -315,25 +316,20 @@
   })();
   
   /* ==========================================================================
-     FOOTER — scroll-reveal, matching the (now static, non-fixed) footer
-     styling in the shared styles.css. This used to size a page-wrap
-     spacer for a pinned/fixed footer, but that mechanism was replaced
-     site-wide with a simpler static-footer + reveal-on-scroll approach —
-     this brings the page in line with that so there's no leftover blank
-     gap at the bottom from a spacer nothing is using anymore.
+     FOOTER — scroll-reveal
      ========================================================================== */
-
+  
   (function () {
     const footer = document.getElementById('contact');
     if (!footer || !footer.classList.contains('site-footer')) return;
-
+  
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+  
     if (prefersReducedMotion || !('IntersectionObserver' in window)) {
       footer.classList.add('is-revealed');
       return;
     }
-
+  
     const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((entry) => {
@@ -345,65 +341,64 @@
       },
       { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
     );
-
+  
     observer.observe(footer);
   })();
-
-/* ==========================================================================
-   EVENT BANNER — same behavior as the homepage's copy of this module.
-   ========================================================================== */
-
-(function () {
-  const STORAGE_KEY = 'eventBannerDismissed';
-  const banner = document.getElementById('eventBanner');
-  const closeBtn = document.getElementById('eventBannerClose');
-  if (!banner || !closeBtn) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  let dismissed = false;
-  try {
-    dismissed = sessionStorage.getItem(STORAGE_KEY) === '1';
-  } catch (e) {
-    // Storage can throw in some privacy modes — just fall through and
-    // show the banner rather than breaking the page over it.
-  }
-
-  if (dismissed) {
-    banner.remove();
-    return;
-  }
-
-  function setOffset(px) {
-    document.documentElement.style.setProperty('--event-banner-offset', px + 'px');
-  }
-
-  function show() {
-    setOffset(banner.offsetHeight);
-    requestAnimationFrame(() => banner.classList.add('is-visible'));
-  }
-
-  function dismiss() {
-    banner.classList.remove('is-visible');
-    setOffset(0);
+  
+  /* ==========================================================================
+     EVENT BANNER
+     ========================================================================== */
+  
+  (function () {
+    const STORAGE_KEY = 'eventBannerDismissed';
+    const banner = document.getElementById('eventBanner');
+    const closeBtn = document.getElementById('eventBannerClose');
+    if (!banner || !closeBtn) return;
+  
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+    let dismissed = false;
     try {
-      sessionStorage.setItem(STORAGE_KEY, '1');
+      dismissed = sessionStorage.getItem(STORAGE_KEY) === '1';
     } catch (e) {
-      // Ignore — worst case it reappears next page load, not a big deal.
+      // Storage exception fallback
     }
-    setTimeout(() => banner.remove(), prefersReducedMotion ? 0 : 750);
-  }
-
-  closeBtn.addEventListener('click', dismiss);
-
-  window.addEventListener('resize', () => {
-    if (banner.classList.contains('is-visible')) setOffset(banner.offsetHeight);
-  });
-
-  if (prefersReducedMotion) {
-    setOffset(banner.offsetHeight);
-    banner.classList.add('is-visible');
-  } else {
-    setTimeout(show, 600);
-  }
-})();
+  
+    if (dismissed) {
+      banner.remove();
+      return;
+    }
+  
+    function setOffset(px) {
+      document.documentElement.style.setProperty('--event-banner-offset', px + 'px');
+    }
+  
+    function show() {
+      setOffset(banner.offsetHeight);
+      requestAnimationFrame(() => banner.classList.add('is-visible'));
+    }
+  
+    function dismiss() {
+      banner.classList.remove('is-visible');
+      setOffset(0);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, '1');
+      } catch (e) {
+        // Ignore
+      }
+      setTimeout(() => banner.remove(), prefersReducedMotion ? 0 : 750);
+    }
+  
+    closeBtn.addEventListener('click', dismiss);
+  
+    window.addEventListener('resize', () => {
+      if (banner.classList.contains('is-visible')) setOffset(banner.offsetHeight);
+    });
+  
+    if (prefersReducedMotion) {
+      setOffset(banner.offsetHeight);
+      banner.classList.add('is-visible');
+    } else {
+      setTimeout(show, 600);
+    }
+  })();

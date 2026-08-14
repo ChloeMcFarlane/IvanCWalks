@@ -359,20 +359,11 @@
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382430/ivan-gallery13.jpg',
     ];
   
-    function shuffle(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-  
-    const shuffled = shuffle(GALLERY_IMAGES);
-  
-    shuffled.forEach((src, i) => {
+    // Fixed, standardized order — was being re-shuffled with Math.random()
+    // on every page load, so the grid never looked the same way twice.
+    GALLERY_IMAGES.forEach((src, i) => {
       const num = i + 1;
-  
+
       const item = document.createElement('div');
       item.className = 'gallery-item';
       item.dataset.src = src;
@@ -380,14 +371,14 @@
       item.setAttribute('role', 'button');
       item.setAttribute('tabindex', '0');
       item.setAttribute('aria-label', `Preview project ${num}`);
-  
+
       const img = document.createElement('img');
       img.className = 'gallery-media';
       img.src = src;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';
-  
+
       item.appendChild(img);
       grid.appendChild(item);
     });

@@ -6,13 +6,13 @@
    plus the accent (--font-accent) and decaying (--font-decaying) type faces.
    ========================================================================== */
 
-/* ---- team member accent colors, mapped onto the existing palette ---- */
+/* ---- discipline accent colors, mapped onto the existing palette ---- */
 :root {
-  --cat-team-1: color-mix(in srgb, var(--pale-sky) 70%, black 30%);
-  --cat-team-2: var(--faded-copper);
-  --cat-team-3: rgb(74, 108, 158);
-  --cat-team-4: rgb(223, 116, 221);
-  --cat-team-5: var(--amber-glow);
+  --cat-choreography: color-mix(in srgb, var(--pale-sky) 70%, black 30%);
+  --cat-acting: var(--faded-copper);
+  --cat-directing: rgb(74, 108, 158);
+  --cat-movement: rgb(223, 116, 221);
+  --cat-production: var(--amber-glow);
 }
 
 /* ==========================================================================
@@ -170,11 +170,11 @@
   opacity: 1;
 }
 
-.projects-filter[data-filter="team-1"] { color: var(--cat-team-1); }
-.projects-filter[data-filter="team-2"] { color: var(--cat-team-2); }
-.projects-filter[data-filter="team-3"] { color: var(--cat-team-3); }
-.projects-filter[data-filter="team-4"] { color: var(--cat-team-4); }
-.projects-filter[data-filter="team-5"] { color: var(--cat-team-5); }
+.projects-filter[data-filter="choreography"] { color: var(--cat-choreography); }
+.projects-filter[data-filter="acting"]       { color: var(--cat-acting); }
+.projects-filter[data-filter="directing"]    { color: var(--cat-directing); }
+.projects-filter[data-filter="movement"]     { color: var(--cat-movement); }
+.projects-filter[data-filter="production"]   { color: var(--cat-production); }
 .projects-filter[data-filter="all"]    { color: var(--silver); }
 .projects-filter.is-active[data-filter]      { color: var(--onyx); }
 
@@ -239,6 +239,14 @@
   display: none;
 }
 
+/* Set by js/projects.js's floating-thumbnail module around scroll events —
+   see the JS comment for why this exists. Only ever applied on
+   non-touch/wide viewports, since that's the only place the floating
+   thumbnail runs at all. */
+.projects-list.is-scroll-locked .project-row {
+  pointer-events: none;
+}
+
 .project-link {
   display: flex;
   align-items: center;
@@ -301,16 +309,16 @@
   background-color: var(--tag-color, var(--grey-olive));
 }
 
-.project-row[data-category="team-1"] .project-tag--cat { color: var(--cat-team-1); }
-.project-row[data-category="team-2"] .project-tag--cat { color: var(--cat-team-2); }
-.project-row[data-category="team-3"] .project-tag--cat { color: var(--cat-team-3); }
-.project-row[data-category="team-4"] .project-tag--cat { color: var(--cat-team-4); }
-.project-row[data-category="team-5"] .project-tag--cat { color: var(--cat-team-5); }
-.project-row[data-category="team-1"] .project-tag--cat::before { background-color: var(--cat-team-1); }
-.project-row[data-category="team-2"] .project-tag--cat::before { background-color: var(--cat-team-2); }
-.project-row[data-category="team-3"] .project-tag--cat::before { background-color: var(--cat-team-3); }
-.project-row[data-category="team-4"] .project-tag--cat::before { background-color: var(--cat-team-4); }
-.project-row[data-category="team-5"] .project-tag--cat::before { background-color: var(--cat-team-5); }
+.project-row[data-category="choreography"] .project-tag--cat { color: var(--cat-choreography); }
+.project-row[data-category="acting"] .project-tag--cat       { color: var(--cat-acting); }
+.project-row[data-category="directing"] .project-tag--cat    { color: var(--cat-directing); }
+.project-row[data-category="movement"] .project-tag--cat     { color: var(--cat-movement); }
+.project-row[data-category="production"] .project-tag--cat   { color: var(--cat-production); }
+.project-row[data-category="choreography"] .project-tag--cat::before { background-color: var(--cat-choreography); }
+.project-row[data-category="acting"] .project-tag--cat::before       { background-color: var(--cat-acting); }
+.project-row[data-category="directing"] .project-tag--cat::before    { background-color: var(--cat-directing); }
+.project-row[data-category="movement"] .project-tag--cat::before     { background-color: var(--cat-movement); }
+.project-row[data-category="production"] .project-tag--cat::before   { background-color: var(--cat-production); }
 
 .project-blurb {
   font-family: var(--font-sans);
@@ -428,11 +436,11 @@
   line-height: 1;
 }
 
-.projects-marquee-word--choreography { color: var(--cat-team-1); }
-.projects-marquee-word--acting       { color: var(--cat-team-2); }
-.projects-marquee-word--directing    { color: var(--cat-team-3); }
-.projects-marquee-word--movement     { color: var(--cat-team-4); }
-.projects-marquee-word--production   { color: var(--cat-team-5); }
+.projects-marquee-word--choreography { color: var(--cat-choreography); }
+.projects-marquee-word--acting       { color: var(--cat-acting); }
+.projects-marquee-word--directing    { color: var(--cat-directing); }
+.projects-marquee-word--movement     { color: var(--cat-movement); }
+.projects-marquee-word--production   { color: var(--cat-production); }
 
 .projects-marquee-dot {
   width: 8px;
