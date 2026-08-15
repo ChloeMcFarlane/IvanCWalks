@@ -348,7 +348,7 @@
   
     const GALLERY_IMAGES = [
       'iproj-ASSETS/ivan-gallery15.JPG',
-      'https://res.cloudinary.com/xxhi8hls/video/upload/v1786382656/ivan-gallery1.mp4',
+      'https://res.cloudinary.com/xxhi8hls/video/upload/v1786821979/ivan-gallery1-2.mp4',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382155/ivan-gallery3.jpg',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381958/ivan-gallery6.jpg',
@@ -518,6 +518,23 @@
   (function () {
     const about = document.getElementById('about');
     if (!about) return;
+
+    // Split each target's text into words, each wrapped in a clipping
+    // "line" mask (.word-line) around the moving word (.word), and give
+    // every word its own transition-delay so they fade/rise in one after
+    // another instead of all at once.
+    const STAGGER_MS = 55;
+    const splitTargets = Array.from(about.querySelectorAll('.about-heading, .about-statement'));
+
+    splitTargets.forEach((el) => {
+      const words = el.textContent.trim().split(/\s+/);
+      el.innerHTML = words
+        .map((word, i) => {
+          const delay = i * STAGGER_MS;
+          return `<span class="word-line"><span class="word" style="transition-delay:${delay}ms">${word}</span></span>`;
+        })
+        .join(' ');
+    });
   
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   

@@ -134,7 +134,7 @@
           }
         });
       },
-      { threshold: 0.2, rootMargin: '0px 0px -8% 0px' }
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
     );
   
     rows.forEach((row) => observer.observe(row));
@@ -174,7 +174,7 @@
   })();
   
   /* ==========================================================================
-     FLOATING THUMBNAIL — Desktop hover-triggered preview
+     FLOATING THUMBNAIL — Desktop hover preview (With empty image fallback)
      ========================================================================== */
   
   (function () {
@@ -182,7 +182,6 @@
     const thumb = document.getElementById('projectsFloatingThumb');
     if (!list || !thumb) return;
   
-    // Prevent initialisation on mobile devices, small screens, or reduced motion settings
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
     const isNarrowViewport = window.matchMedia('(max-width: 900px)').matches;
@@ -221,10 +220,11 @@
     }
   
     rows.forEach((row) => {
-      const src = row.dataset.thumb;
-  
       row.addEventListener('mouseenter', (e) => {
-        if (!src) return;
+        const src = row.dataset.thumb;
+        // Restorative fallback: skip hover state if image path is empty or placeholder
+        if (!src || src.trim() === '') return;
+  
         active = true;
         if (media.getAttribute('src') !== src) {
           media.setAttribute('src', src);

@@ -223,12 +223,26 @@
     position: relative;
   }
   
-  .carousel-slide video {
+  .carousel-slide video,
+  .carousel-slide img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
+  }
+
+  /* The YouTube embed slide is an iframe, not a video/img — its
+     width="100%"/height="100%" HTML attributes aren't reliably
+     honored inside a flex slide with no explicit pixel height, so
+     without this rule it can collapse to the browser's default
+     iframe size (300x150) and appear to "not display". Force it to
+     fill the slide exactly like the other media. */
+  .carousel-slide iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
   }
   
   .carousel-arrow {
@@ -311,7 +325,7 @@
     left: 0;
     width: 100%;
     z-index: 600;
-    background-color: var(--alabaster-grey);
+    background-color: var(--sunflower-gold);
     color: var(--onyx);
     transform: translateY(-100%);
     transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
@@ -847,7 +861,6 @@
   }
   
   .about-copy {
-    display: flex;
     flex-direction: column;
     gap: 1.75rem;
     max-width: 44rem;
@@ -865,13 +878,6 @@
     letter-spacing: 0.02em;
     font-size: clamp(2rem, 5vw, 3.75rem);
     line-height: 1.05;
-    opacity: 0;
-    transform: translateY(70px) scale(1.04);
-    filter: blur(20px);
-    transition:
-      transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 1s ease-out,
-      opacity 0.8s ease-out;
   }
   
   .about-statement {
@@ -880,41 +886,77 @@
     font-size: clamp(1rem, 1.3vw, 1.15rem);
     line-height: 1.75;
     max-width: 34rem;
+  }
+
+  /* Line/word reveal — index.js wraps each word of the heading and
+     statement in a .word-line (mask) > .word (mover) pair. The mask
+     clips so each word rises up from behind its own line as it fades
+     in, staggered word by word via an inline transition-delay. */
+  .about-heading .word-line,
+  .about-statement .word-line {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.15em;
+    margin-bottom: -0.15em;
+  }
+
+  .about-heading .word,
+  .about-statement .word {
+    display: inline-block;
     opacity: 0;
-    transform: translateY(50px);
-    filter: blur(16px);
+    transform: translateY(115%);
+    filter: blur(6px);
     transition:
-      transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-      filter 0.9s ease-out 0.2s,
-      opacity 0.7s ease-out 0.2s;
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.7s ease-out,
+      opacity 0.6s ease-out;
   }
   
-  .about.is-revealed .about-heading,
-  .about.is-revealed .about-statement {
+  .about.is-revealed .about-heading .word,
+  .about.is-revealed .about-statement .word {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     filter: blur(0);
   }
   
   /* ---- Concert Crew grid ---- */
-  .team-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-  }
-  
-  .team-member {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    opacity: 0;
-    transform: translateY(60px);
-    filter: blur(12px);
-    transition:
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 0.8s ease-out,
-      opacity 0.7s ease-out;
-  }
+/* Center-align the team grid when there are few members CHANGE LATER WHEN ALL CREW MEMBERS ARE ADDED*/
+/* Center-align the team grid */
+.team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.team-member {
+  text-align: center;
+}
+
+/* Fix image container sizing so all photos match uniformly */
+.team-member-photo {
+  width: 280px;
+  height: 360px;
+  overflow: hidden;
+  margin: 0 auto 1rem auto;
+}
+
+.team-member-image {
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Enlarge and center the statement layout */
+.about-statement {
+  font-size: 1.5rem;
+  line-height: 1.8;
+  font-style: italic;
+  letter-spacing: 0.20em;
+}
+
+/* Artful fade-in animation for split text lines */
   
   .about.is-revealed .team-member {
     opacity: 1;
@@ -932,7 +974,6 @@
   
   .team-member-photo {
     position: relative;
-    width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background-color: var(--graphite);
@@ -1010,8 +1051,8 @@
   .merch-products {
     position: relative;
     z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(12rem, 18rem));
     align-items: center;
     justify-content: center;
     gap: clamp(1.5rem, 5vw, 3.5rem);
@@ -1026,9 +1067,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1 1 15rem;
-    max-width: 18rem;
+    width: 100%;
     aspect-ratio: 4 / 5;
+    /* Fixed padding so the "canvas" every product photo sits in is
+       identical — this is what keeps them reading as the same size
+       even when the source PNGs themselves have different amounts of
+       built-in transparent padding around the garment. */
+    padding: 8%;
+    box-sizing: border-box;
   }
 
   /* The glow lives here, behind the image, as its own shape — a blurred

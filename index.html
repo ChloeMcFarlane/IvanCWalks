@@ -19,9 +19,9 @@
         <div class="event-banner" id="eventBanner" role="region" aria-label="Upcoming event">
             <div class="event-banner-inner">
                 <span class="event-banner-text">
-                    <strong>Live at Barclays Center</strong> — Sept 14, 2026
+                    <strong>IS THIS OKAY</strong>
                 </span>
-                <a class="event-banner-link" href="#" target="_blank" rel="noopener noreferrer">
+                <a class="event-banner-link" href="https://www.eventbrite.com/e/is-this-okay-tickets-1994718377363" target="_blank" rel="noopener noreferrer">
                     Buy tickets <span class="event-banner-link-arrow" aria-hidden="true">&rarr;</span>
                 </a>
                 <button class="event-banner-close" id="eventBannerClose" type="button" aria-label="Dismiss announcement">&times;</button>
@@ -44,7 +44,7 @@
                 <a href="#hero" class="nav-logo" id="navLogo">Ivan Cecil Walks</a>
 
                 <div class="nav-actions">
-                    <a class="nav-cta" href="mailto:hello@ivancecilwalks.com">
+                    <a class="nav-cta" href="mailto:ivancecilwalks@gmail.com">
                         <span class="nav-cta-row">
                             <span class="nav-cta-text">Get in touch</span>
                             <span class="nav-cta-arrow">&rarr;</span>
@@ -72,13 +72,7 @@
             </div>
         </nav>
 
-        <!-- ===================== PAGE WRAP =====================
-             Everything that scrolls normally lives in here. It's an opaque,
-             positioned layer sitting above the fixed footer — as you scroll
-             to the bottom, this wrap's own spacer runs out and the footer
-             (pinned behind it the whole time) is uncovered. Scroll back up
-             and it's covered again. That's the whole "pop up / recede"
-             mechanism — no JS needed for the motion itself. -->
+        <!-- ===================== PAGE WRAP ===================== -->
         <div class="page-wrap" id="pageWrap">
 
         <!-- ===================== HERO ===================== -->
@@ -89,21 +83,26 @@
                         <video src="iproj-ASSETS/ivanset-hero.mp4" autoplay muted loop playsinline></video>
                     </div>
                     <div class="carousel-slide">
-                        <video src="iproj-ASSETS/ivanconcert.mov" autoplay muted loop playsinline preload="none"></video>
+                        <a class="carousel-video-fallback" href="https://www.youtube.com/watch?v=cYARhJrjltQ" target="_blank" rel="noopener noreferrer" aria-label="Watch Off The Clock on YouTube">
+                            <img src="iproj-ASSETS/Off-the-clock.png" alt="Off The Clock">
+                            <span class="carousel-video-fallback-play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+                            </span>
+                        </a>
                     </div>
                     <div class="carousel-slide">
-                        <img src="iproj-ASSETS/iproj-slide-3.jpg" alt="">
+                        <img src="iproj-ASSETS/ivanconcert.mov" alt="">
                     </div>
-
+ 
                 </div>
-
+ 
                 <button class="carousel-arrow carousel-arrow--prev" id="carouselPrev" type="button" aria-label="Previous slide">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
                 <button class="carousel-arrow carousel-arrow--next" id="carouselNext" type="button" aria-label="Next slide">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
-
+ 
                 <div class="carousel-dots" id="carouselDots">
                     <button class="carousel-dot is-active" type="button" data-slide="0" aria-label="Go to slide 1"></button>
                     <button class="carousel-dot" type="button" data-slide="1" aria-label="Go to slide 2"></button>
@@ -140,65 +139,6 @@
             </div>
         </div>
 
-        <!-- ===================== ABOUT / MEET THE TEAM ===================== -->
-        <section class="about" id="about">
-            <div class="about-inner">
-                <div class="about-copy">
-                    <h2 class="about-heading">Concert Crew</h2>
-                    <p class="about-statement">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua, the people behind
-                        every piece, every set, every room.
-                    </p>
-                </div>
-
-                <!-- Replace names, titles, and photos with the real team.
-                     Grid is fixed at 5 columns on desktop, 3 on tablet, 2 on
-                     mobile (see the responsive section in styles.css). -->
-                <div class="team-grid" id="teamGrid">
-                    <div class="team-member">
-                        <div class="team-member-photo">
-                            <img class="team-member-image" src="iproj-ASSETS/team-1.jpg" alt="">
-                        </div>
-                        <p class="team-member-name">Team Member One</p>
-                        <p class="team-member-title">Creative Director</p>
-                    </div>
-
-                    <div class="team-member">
-                        <div class="team-member-photo">
-                            <img class="team-member-image" src="iproj-ASSETS/team-2.jpg" alt="">
-                        </div>
-                        <p class="team-member-name">Team Member Two</p>
-                        <p class="team-member-title">Choreographer</p>
-                    </div>
-
-                    <div class="team-member">
-                        <div class="team-member-photo">
-                            <img class="team-member-image" src="iproj-ASSETS/team-3.jpg" alt="">
-                        </div>
-                        <p class="team-member-name">Team Member Three</p>
-                        <p class="team-member-title">Producer</p>
-                    </div>
-
-                    <div class="team-member">
-                        <div class="team-member-photo">
-                            <img class="team-member-image" src="iproj-ASSETS/team-4.jpg" alt="">
-                        </div>
-                        <p class="team-member-name">Team Member Four</p>
-                        <p class="team-member-title">Stylist</p>
-                    </div>
-
-                    <div class="team-member">
-                        <div class="team-member-photo">
-                            <img class="team-member-image" src="iproj-ASSETS/team-5.jpg" alt="">
-                        </div>
-                        <p class="team-member-name">Team Member Five</p>
-                        <p class="team-member-title">Photographer</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- ===================== MERCH ===================== -->
         <section class="merch" id="merch">
             <div class="merch-marquee" id="merchMarquee" aria-hidden="true">
@@ -226,10 +166,66 @@
                 </div>
             </div>
 
-            <a class="merch-shop-btn" href="#">
+            <a class="merch-shop-btn" href="https://9ew1g1-6w.myshopify.com/collections/all" target="_blank" rel="noopener noreferrer">
                 <span class="merch-shop-btn-text">Shop Merch</span>
                 <span class="merch-shop-btn-arrow" aria-hidden="true">&rarr;</span>
             </a>
+        </section>
+
+        <!-- ===================== ABOUT / MEET THE TEAM ===================== -->
+        <section class="about" id="about">
+            <div class="about-inner">
+                <div class="about-copy">
+                    <h2 class="about-heading" id="aboutHeading">Concert Crew</h2>
+                    <p class="about-statement" id="aboutStatement">Meet the Crew</p>
+                </div>
+
+                <div class="team-grid" id="teamGrid">
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821392/image4.jpg" alt="Ivan Cecil Walks">
+                        </div>
+                        <p class="team-member-name">Ivan Cecil Walks</p>
+                        <p class="team-member-title">Creator</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821395/image3.jpg" alt="Clarisse Wikstrom">
+                        </div>
+                        <p class="team-member-name">Clarisse Wikstrom</p>
+                        <p class="team-member-title">Lead Designer & Dancer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821451/image2.png" alt="Olivia Corso">
+                        </div>
+                        <p class="team-member-name">Olivia Corso</p>
+                        <p class="team-member-title">Director/Producer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821392/image1.png" alt="Luca Bella Sisino">
+                        </div>
+                        <p class="team-member-name">Luca Bella Sisino</p>
+                        <p class="team-member-title">Actor/Writer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="team-member-photo">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821733/Headshot2.jpg" alt="Chloe McFarlane">
+                        </div>
+                        <p class="team-member-name">Chloe McFarlane</p>
+                        <p class="team-member-title">Front End-Engineer</p>
+                    </div>
+
+                    <!-- Per client asset doc: Dylan Avillanoza (Director & Writer) and
+                         Simo Motsa (Director & Editor) are marked "FOR LATER — do not
+                         add now," so they're intentionally left off the crew grid. -->
+                </div>
+            </div>
         </section>
 
     </div>
@@ -245,6 +241,7 @@
             <div class="footer-row footer-row--mid">
                 <span class="footer-tagline">Actor <em>/</em> Choreographer <em>/</em> Director <em>/</em> Mover</span>
                 <div class="footer-socials">
+                    <!-- TODO: Update social media URLs when provided -->
                     <a class="footer-social-btn" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
                     <a class="footer-social-btn" href="#" target="_blank" rel="noopener noreferrer">TikTok</a>
                     <a class="footer-social-btn" href="#" target="_blank" rel="noopener noreferrer">YouTube</a>
@@ -253,7 +250,7 @@
 
             <div class="footer-row footer-row--email">
                 <h2 class="footer-contact-header">Contact</h2>
-                <a class="footer-email" href="mailto:hello@ivancecilwalks.com">hello@ivancecilwalks.com</a>
+                <a class="footer-email" href="mailto:ivancecilwalks@gmail.com">ivancecilwalks@gmail.com</a>
             </div>
         </div>
     </footer>
