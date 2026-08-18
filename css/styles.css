@@ -1010,6 +1010,57 @@
     font-size: clamp(0.78rem, 1vw, 0.9rem);
     line-height: 1.3;
   }
+
+  /* ---- Crew "personal site" / "socials link" button ---- */
+  .team-member-link {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+    padding: 0.5rem 1.15rem;
+    border: 1px solid var(--grey-olive);
+    color: var(--alabaster-grey);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.72rem;
+    overflow: hidden;
+    isolation: isolate;
+    transition: color 0.35s ease, border-color 0.35s ease;
+  }
+
+  .team-member-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--alabaster-grey);
+    transform: translateY(101%);
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .team-member-link:hover,
+  .team-member-link:focus-visible {
+    color: var(--onyx);
+    border-color: var(--alabaster-grey);
+  }
+
+  .team-member-link:hover::before,
+  .team-member-link:focus-visible::before {
+    transform: translateY(0);
+  }
+
+  .team-member-link-arrow {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .team-member-link:hover .team-member-link-arrow,
+  .team-member-link:focus-visible .team-member-link-arrow {
+    transform: translateX(4px);
+  }
   
   /* ==========================================================================
      MERCH
@@ -1550,6 +1601,8 @@
     .merch-product::before,
     .merch-shop-btn::before,
     .merch-shop-btn-arrow,
+    .team-member-link::before,
+    .team-member-link-arrow,
     .footer-bg,
     .footer-row,
     .footer-social-btn::before,
