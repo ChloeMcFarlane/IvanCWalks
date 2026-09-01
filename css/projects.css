@@ -25,25 +25,30 @@
   overflow: hidden;
 }
 
-.projects-hero-glow {
+.projects-hero-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* Matches the homepage gallery-glow colorway — pale-sky/charcoal-blue
-     for the blues, faded-copper/mauve-bark for the browns. */
-  background: linear-gradient(
-    160deg,
-    transparent 0%,
-    var(--pale-sky-glow) 18%,
-    var(--charcoal-blue-glow) 68%,
-    var(--faded-copper-glow) 88%,
-    var(--mauve-bark-glow) 78%,
-    transparent 100%
-  );
-  filter: blur(150px) saturate(130%);
+  background-image: url('https://res.cloudinary.com/xxhi8hls/image/upload/v1788257318/Untitled_Artwork_2.png');
+  background-size: cover;
+  background-position: center;
   opacity: 0.55;
-  mix-blend-mode: screen;
+}
+
+.projects-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 18, 0.88) 0%,
+    rgba(18, 18, 18, 0.74) 45%,
+    rgba(18, 18, 18, 0.9) 100%
+  );
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
 .projects-hero-inner {
@@ -103,7 +108,7 @@
 .projects-statement {
   font-family: var(--font-sans);
   color: var(--silver);
-  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  font-size: clamp(1.75rem, 1.3vw, 1.95rem);
   line-height: 1.7;
   max-width: 46rem;
   opacity: 0;
@@ -175,7 +180,7 @@
 .projects-filter[data-filter="directing"]    { color: var(--cat-directing); }
 .projects-filter[data-filter="movement"]     { color: var(--cat-movement); }
 .projects-filter[data-filter="production"]   { color: var(--cat-production); }
-.projects-filter[data-filter="all"]    { color: var(--silver); }
+.projects-filter[data-filter="all"]          { color: var(--silver); }
 .projects-filter.is-active[data-filter]      { color: var(--onyx); }
 
 /* ---- ascii scroll cue, homage to a tiny frame-cycling spinner ---- */
@@ -239,10 +244,6 @@
   display: none;
 }
 
-/* Set by js/projects.js's floating-thumbnail module around scroll events —
-   see the JS comment for why this exists. Only ever applied on
-   non-touch/wide viewports, since that's the only place the floating
-   thumbnail runs at all. */
 .projects-list.is-scroll-locked .project-row {
   pointer-events: none;
 }
@@ -250,19 +251,10 @@
 .project-link {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: clamp(1.25rem, 3vw, 3rem);
   padding: clamp(1.5rem, 4vw, 2.75rem) 0;
   cursor: pointer;
-}
-
-.project-index {
-  flex: 0 0 auto;
-  font-family: var(--font-accent);
-  color: var(--grey-olive);
-  font-size: clamp(1rem, 1.6vw, 1.5rem);
-  opacity: 0.55;
-  transition: opacity 0.35s ease, color 0.35s ease;
-  min-width: 2.5ch;
 }
 
 .project-main {
@@ -357,19 +349,10 @@
   transform: rotate(45deg);
 }
 
-.project-link:hover .project-index {
-  opacity: 1;
-  color: var(--onyx);
-}
-
 .project-link:hover .project-title {
   transform: translateX(0.4em);
 }
 
-/* ---- floating cursor-follow media preview ----
-   One shared element per list, repositioned + swapped on hover — the
-   signature interaction, adapted from a mouse-tracking thumbnail pattern
-   into this site's own transform/opacity vocabulary. */
 .projects-floating-thumb {
   position: absolute;
   top: 0;
@@ -467,6 +450,8 @@
   font-size: clamp(2rem, 6vw, 4.5rem);
   line-height: 1.02;
   max-width: 46rem;
+  width: 100%;
+  text-align: center;
   margin: 0 auto 2rem;
 }
 
@@ -527,19 +512,15 @@
     gap: 0.75rem 1.25rem;
   }
 
-  .project-index {
-    order: 1;
-  }
-
   .project-arrow {
-    order: 2;
+    order: 1;
     margin-left: auto;
     width: 2.4rem;
     height: 2.4rem;
   }
 
   .project-main {
-    order: 3;
+    order: 2;
     flex: 1 1 100%;
   }
 
@@ -548,20 +529,18 @@
     align-items: flex-start;
   }
 
-  .projects-heading{
+  .projects-heading {
     font-size: clamp(0.5rem, 4.5vw, 2.5rem);
-
   }
 
   .container {
     animation: sectionAppear linear both;
-    animation-timeline: view(); /* Not supported on iOS Safari */
+    animation-timeline: view();
     animation-range: entry 0% cover 35%;
   }
 }
 
 @media (max-width: 768px) {
-  .projects-hero-glow,
   .gallery-glow {
     filter: blur(30px) !important;
     mix-blend-mode: normal !important;

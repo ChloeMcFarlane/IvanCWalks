@@ -347,20 +347,17 @@
     if (!grid) return;
   
     const GALLERY_IMAGES = [
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382430/ivan-gallery13.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382399/ivan-gallery11.jpg',
       'iproj-ASSETS/ivan-gallery15.JPG',
       'https://res.cloudinary.com/xxhi8hls/video/upload/v1786821979/ivan-gallery1-2.mp4',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382155/ivan-gallery3.jpg',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381958/ivan-gallery6.jpg',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381984/ivan-gallery8.png',
       'iproj-ASSETS/ivan-gallery12.jpeg',
       'iproj-ASSETS/ivan-gallery10.jpeg',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382399/ivan-gallery11.jpg',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382430/ivan-gallery13.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381984/ivan-gallery8.png',
     ];
-  
-    // Fixed, standardized order — was being re-shuffled with Math.random()
-    // on every page load, so the grid never looked the same way twice.
     GALLERY_IMAGES.forEach((src, i) => {
       const num = i + 1;
 

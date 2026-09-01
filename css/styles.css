@@ -468,7 +468,7 @@
   
   .nav-logo {
     font-family: var(--font-bold);
-    color: var(--alabaster-grey);
+    color: color-mix(in srgb, var(--alabaster-grey) 80%, var(--silver) 20%);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-size: clamp(1.5rem, 4vw, 3.5rem);
@@ -1302,7 +1302,7 @@
     .footer-name {
       display: block;
       font-family: var(--font-bold);
-      color: var(--alabaster-grey);
+      color: color-mix(in srgb, var(--alabaster-grey) 80%, var(--silver) 20%);
       text-transform: uppercase;
       letter-spacing: 0.02em;
       font-size: clamp(1.75rem, 3.5vw, 3.5rem);
