@@ -87,13 +87,16 @@
       targetProgress = 100;
     }
   
-    // Waits on every hero-carousel media element — both <img> and <video> —
-    // before letting the preloader finish. Images settle on load/error;
-    // videos settle on canplay/error (readyState >= 3 means enough is
-    // buffered to play without stalling).
+    // Waits ONLY on the first hero slide (the one visible on load). Slides 2
+    // and 3 are off-screen and lazy-loaded, so holding the preloader for them
+    // just made everyone wait for media they can't see yet.
+    // Images settle on load/error; the video settles on loadeddata/error
+    // (readyState >= 2 means the first frame is decoded and can be shown —
+    // it autoplays from there).
     function watchImages() {
-      const imgs = carouselTrack ? Array.from(carouselTrack.querySelectorAll('img')) : [];
-      const videos = carouselTrack ? Array.from(carouselTrack.querySelectorAll('video')) : [];
+      const firstSlide = carouselTrack ? carouselTrack.children[0] : null;
+      const imgs = firstSlide ? Array.from(firstSlide.querySelectorAll('img')) : [];
+      const videos = firstSlide ? Array.from(firstSlide.querySelectorAll('video')) : [];
   
       if (imgs.length === 0 && videos.length === 0) {
         onImagesReady();
@@ -116,10 +119,10 @@
       });
   
       videos.forEach((video) => {
-        if (video.readyState >= 3) {
+        if (video.readyState >= 2) {
           settle();
         } else {
-          video.addEventListener('canplay', settle, { once: true });
+          video.addEventListener('loadeddata', settle, { once: true });
           video.addEventListener('error', settle, { once: true });
         }
       });
@@ -249,6 +252,76 @@
   })();
   
   /* ==========================================================================
+     HERO VIDEO — autoplay silently, and never show a play button
+     ========================================================================== */
+  
+  (function () {
+    const heroVideos = Array.from(document.querySelectorAll('#carouselTrack video'));
+    if (!heroVideos.length) return;
+  
+    heroVideos.forEach((video) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.controls = false;
+      video.removeAttribute('controls');
+      video.disablePictureInPicture = true;
+      video.disableRemotePlayback = true;
+    });
+  
+    const GESTURES = ['pointerup', 'touchend', 'click', 'keydown'];
+  
+    function onGesture() { heroVideos.forEach(tryPlay); }
+    function removeGestureListeners() {
+      GESTURES.forEach((type) => document.removeEventListener(type, onGesture));
+    }
+  
+    function reveal(video) {
+      const slide = video.closest('.carousel-slide');
+      if (slide) slide.classList.add('is-playing');
+      removeGestureListeners();
+    }
+  
+    function tryPlay(video) {
+      if (!video.paused) return;
+      const attempt = video.play();
+      if (attempt && typeof attempt.catch === 'function') {
+        attempt.catch((err) => {
+          if (err && err.name === 'NotSupportedError') {
+            console.warn('[hero video] missing file or unsupported format:', video.currentSrc || video.src);
+          }
+        });
+      }
+    }
+  
+    heroVideos.forEach((video) => {
+      video.addEventListener('playing', () => reveal(video));
+      video.addEventListener('loadeddata', () => tryPlay(video));
+      video.addEventListener('canplay', () => tryPlay(video));
+      video.addEventListener('error', () => {
+        const code = video.error ? video.error.code : 'unknown';
+        console.warn('[hero video] failed to load (MediaError code ' + code + '). 3 = decode error, 4 = file not found / bad format.');
+      });
+      if (!video.paused && video.readyState >= 3) reveal(video);
+    });
+  
+    GESTURES.forEach((type) => document.addEventListener(type, onGesture, { passive: true }));
+    heroVideos.forEach(tryPlay);
+  
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) heroVideos.forEach(tryPlay);
+    });
+    window.addEventListener('pageshow', () => heroVideos.forEach(tryPlay));
+  
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => { if (entry.isIntersecting) tryPlay(entry.target); });
+      }, { threshold: 0.25 });
+      heroVideos.forEach((video) => io.observe(video));
+    }
+  })();
+  
+  /* ==========================================================================
      SITE NAV — hamburger toggle + Lenis-powered smooth scroll
      ========================================================================== */
   
@@ -358,12 +431,44 @@
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381984/ivan-gallery8.png',
     ];
+    // Cloudinary URLs look like  .../<image|video>/upload/v123/file.ext
+    const CLOUDINARY_RE = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/(image|video)\/upload\/)(v\d+\/.+)$/;
+
+    // Every tile needs two versions of its asset:
+    //   thumb — small, for the grid tile (tiles are only ~400px wide on screen)
+    //   full  — bigger, only fetched when the lightbox opens / is pre-warmed
+    // Local files (iproj-ASSETS/...) can't be resized this way, so they pass
+    // through untouched for both.
+    function buildSources(src) {
+      const m = src.match(CLOUDINARY_RE);
+      if (!m) return { thumb: src, full: src };
+
+      const base = m[1];
+      const type = m[2];
+      const rest = m[3];
+
+      if (type === 'video') {
+        // A video can't go in an <img>. Cloudinary returns a still frame when
+        // the extension is swapped to .jpg; so_0 = frame at 0 seconds.
+        return {
+          thumb: base + 'so_0,q_auto,w_800/' + rest.replace(/\.[^./]+$/, '.jpg'),
+          full: src,
+        };
+      }
+
+      return {
+        thumb: base + 'f_auto,q_auto,w_800/' + rest,
+        full: base + 'f_auto,q_auto,w_1200/' + rest,
+      };
+    }
+
     GALLERY_IMAGES.forEach((src, i) => {
       const num = i + 1;
+      const { thumb, full } = buildSources(src);
 
       const item = document.createElement('div');
       item.className = 'gallery-item';
-      item.dataset.src = src;
+      item.dataset.src = full;
       item.dataset.project = String(num).padStart(2, '0');
       item.setAttribute('role', 'button');
       item.setAttribute('tabindex', '0');
@@ -371,7 +476,7 @@
 
       const img = document.createElement('img');
       img.className = 'gallery-media';
-      img.src = src;
+      img.src = thumb;
       img.alt = '';
       img.loading = 'lazy';
       img.decoding = 'async';

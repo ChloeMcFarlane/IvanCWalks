@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Black Wind Entertainment | Site</title>
 
+        <!-- HERO DEBUGGER -->
+        <link rel="preload" as="image" href="https://res.cloudinary.com/xxhi8hls/image/upload/v1790114973/ivanset-hero-poster.png" fetchpriority="high">
+
         <!-- CUSTOM CSS -->
         <link rel="stylesheet" href="css/styles.css">
 
@@ -79,22 +82,19 @@
         <section class="hero" id="hero">
             <div class="hero-carousel" id="heroCarousel">
                 <div class="carousel-track" id="carouselTrack">
-                    <div class="carousel-slide">
-                        <video src="iproj-ASSETS/ivanset-hero.mp4" autoplay muted loop playsinline></video>
+                    <div class="carousel-slide carousel-slide--video">
+                        <video class="hero-video" src="https://res.cloudinary.com/xxhi8hls/video/upload/v1790114849/ivanset-hero.mp4">
                     </div>
                     <div class="carousel-slide">
                         <a class="carousel-video-fallback" href="https://www.youtube.com/watch?v=cYARhJrjltQ" target="_blank" rel="noopener noreferrer" aria-label="Watch Off The Clock on YouTube">
-                            <img src="iproj-ASSETS/Off-the-clock.png" alt="Off The Clock">
-                            <span class="carousel-video-fallback-play" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-                            </span>
+                            <img src="iproj-ASSETS/Off-the-clock.png" alt="Off The Clock" loading="lazy" decoding="async">
                         </a>
                     </div>
                     <div class="carousel-slide">
-                        <img src="iproj-ASSETS/ivanconcert.mov" alt="">
+                        <video src="iproj-ASSETS/ivanconcert.mov" alt="" loading="lazy" decoding="async">
                     </div>
- 
                 </div>
+            </div>
  
                 <button class="carousel-arrow carousel-arrow--prev" id="carouselPrev" type="button" aria-label="Previous slide">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -156,13 +156,13 @@
 
             <div class="merch-products">
                 <div class="merch-product">
-                    <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786381918/brown-ivan-tee.png" alt="Merch item 1">
+                    <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786381918/brown-ivan-tee.png" alt="Merch item 1">
                 </div>
                 <div class="merch-product">
                     <img class="merch-product-image" src="iproj-ASSETS/black-ivan-tee.png" alt="Merch item 3">
                 </div>
                 <div class="merch-product">
-                    <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786381914/blue-ivan-tee.png" alt="Merch item 2">
+                    <img class="merch-product-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786381914/blue-ivan-tee.png" alt="Merch item 2">
                 </div>
             </div>
 
@@ -183,7 +183,7 @@
                 <div class="team-grid" id="teamGrid">
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821392/image4.jpg" alt="Ivan Cecil Walks">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786821392/image4.jpg" alt="Ivan Cecil Walks">
                         </div>
                         <p class="team-member-name">Ivan Cecil Walks</p>
                         <p class="team-member-title">Creator</p>
@@ -191,7 +191,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821395/image3.jpg" alt="Clarisse Wikstrom">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786821395/image3.jpg" alt="Clarisse Wikstrom">
                         </div>
                         <p class="team-member-name">Clarisse "RISSE" Wikstrom</p>
                         <p class="team-member-title">Lead Designer & Dancer</p>
@@ -203,7 +203,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821451/image2.png" alt="Olivia Corso">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786821451/image2.png" alt="Olivia Corso">
                         </div>
                         <p class="team-member-name">Olivia Corso</p>
                         <p class="team-member-title">Director/Producer</p>
@@ -215,7 +215,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821392/image1.png" alt="Luca Bella Sisino">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786821392/image1.png" alt="Luca Bella Sisino">
                         </div>
                         <p class="team-member-name">Luca Bella Sisino</p>
                         <p class="team-member-title">Actor/Writer</p>
@@ -227,7 +227,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1786821733/Headshot2.jpg" alt="Chloe McFarlane">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1786821733/Headshot2.jpg" alt="Chloe McFarlane">
                         </div>
                         <p class="team-member-name">Chloe McFarlane</p>
                         <p class="team-member-title">Front End-Engineer</p>
@@ -239,7 +239,7 @@
                          for real photos when available. -->
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1787036293/image5.png" alt="Mya Ison">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1787036293/image5.png" alt="Mya Ison">
                         </div>
                         <p class="team-member-name">Mya Ison</p>
                         <p class="team-member-title">Actor/Playwright</p>
@@ -251,7 +251,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1787036340/image6.jpg" alt="Sharmarke Yusuf">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1787036340/image6.jpg" alt="Sharmarke Yusuf">
                         </div>
                         <p class="team-member-name">Sharmarke Yusuf</p>
                         <p class="team-member-title">Actor/Poet</p>
@@ -263,7 +263,7 @@
 
                     <div class="team-member">
                         <div class="team-member-photo">
-                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/v1787036206/image7.jpg" alt="Simo Motsa">
+                            <img class="team-member-image" src="https://res.cloudinary.com/xxhi8hls/image/upload/f_auto,q_auto,w_600/v1787036206/image7.jpg" alt="Simo Motsa">
                         </div>
                         <p class="team-member-name">Simo Motsa</p>
                         <p class="team-member-title">Director & Editor</p>
