@@ -165,9 +165,24 @@
     let autoplayTimer = null;
     let started = false;
   
+    // Hero videos start playing at page load (even the off-screen ones), so by
+    // the time a later slide slides in, a short clip has already finished.
+    // Restart the incoming slide's video from 0 whenever it becomes active.
+    let lastShown = 0;
+    function restartSlideVideo() {
+      if (current === lastShown) return;
+      lastShown = current;
+      const v = slides[current] ? slides[current].querySelector('video') : null;
+      if (!v) return;
+      try { v.currentTime = 0; } catch (e) {}
+      const attempt = v.play();
+      if (attempt && typeof attempt.catch === 'function') attempt.catch(() => {});
+    }
+
     function render() {
       track.style.transform = 'translateX(-' + (current * 100) + '%)';
       dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+      restartSlideVideo();
     }
   
     function goTo(index) {
@@ -262,6 +277,7 @@
     heroVideos.forEach((video) => {
       video.muted = true;
       video.defaultMuted = true;
+      video.loop = true;
       video.playsInline = true;
       video.controls = false;
       video.removeAttribute('controls');
@@ -422,12 +438,13 @@
     const GALLERY_IMAGES = [
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382430/ivan-gallery13.jpg',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382399/ivan-gallery11.jpg',
-      'iproj-ASSETS/ivan-gallery15.JPG',
-      'https://res.cloudinary.com/xxhi8hls/video/upload/v1786821979/ivan-gallery1-2.mp4',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382155/ivan-gallery3.jpg',
-      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381958/ivan-gallery6.jpg',
       'iproj-ASSETS/ivan-gallery12.jpeg',
       'iproj-ASSETS/ivan-gallery10.jpeg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1786382155/ivan-gallery3.jpg',
+
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1791317873/Aug_30_2026.png',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1791317851/Jan_Feb_2026.jpg',
+      'https://res.cloudinary.com/xxhi8hls/image/upload/v1791317849/Copy_of_BLACKWIND_Ft_I.V.A.N..png',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381956/ivan-gallery4.png',
       'https://res.cloudinary.com/xxhi8hls/image/upload/v1786381984/ivan-gallery8.png',
     ];
